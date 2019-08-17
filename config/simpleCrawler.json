@@ -1,0 +1,12 @@
+{
+    "maxDepth": 0,
+    "filterByDomain": true,
+    "stripQuerystring": true,
+    "downloadUnsupported": false,
+    "maxConcurrency": 4,
+    "allowInitialDomainChange": true,
+    "respectRobotsTxt": true,
+    "parseHTMLComments": false,
+    "parseScriptTags": false,
+    "host": "https://tgiles.github.io"
+}

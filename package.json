@@ -1,0 +1,27 @@
+{
+  "name": "auto-lighthouse",
+  "version": "0.0.1",
+  "description": "A utility package for automating lighthouse reports ",
+  "main": "lighthouse_runner.js",
+  "scripts": {
+    "start": "node lighthouse_runner"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TGiles/useful_scripts.git"
+  },
+  "author": "Tim Giles",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/TGiles/useful_scripts/issues"
+  },
+  "homepage": "https://github.com/TGiles/useful_scripts#readme",
+  "dependencies": {
+    "chrome-launcher": "^0.11.2",
+    "express": "^4.17.1",
+    "lighthouse": "^5.2.0",
+    "open": "6.4.0",
+    "simplecrawler": "^1.1.8",
+    "serve-index": "^1.9.1"
+  }
+}
