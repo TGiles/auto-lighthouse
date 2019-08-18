@@ -149,11 +149,12 @@ const complete = (urlList) => {
         chromeFlags: ['--headless'],
         emulatedFormFactor: 'desktop'
     };
-    let fileTime = new Date().toISOString();
-    // Replacing characters that make Windows filesystem sad
+    let fileTime = new Date().toLocaleString();
+    // Replacing characters that make OS sad
+    fileTime = fileTime.replace(/ /g, '');
+    fileTime = fileTime.replace(/\//g, '_');
+    fileTime = fileTime.replace(/,/g, '_');
     fileTime = fileTime.replace(/:/g, "_");
-    fileTime = fileTime.replace(/\./g, "_");
-
     // tempFilePath is wherever we want to store the generated report
     let tempFilePath = path.join(__dirname, "lighthouse", fileTime);
     if (!fs.existsSync(tempFilePath)) {
