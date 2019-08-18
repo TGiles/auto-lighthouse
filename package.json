@@ -30,11 +30,18 @@
     "simplecrawler": "^1.1.8"
   },
   "devDependencies": {
+    "@release-it/conventional-changelog": "^1.1.0",
     "release-it": "^12.3.5"
   },
   "release-it": {
     "github": {
       "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "conventionalcommits",
+        "infile": "CHANGELOG.md"
+      }
     }
   }
 }
