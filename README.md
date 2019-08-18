@@ -1,10 +1,25 @@
 # auto-lighthouse
 
 A utility package to allow automated Lighthouse auditing on a domain.
-This utility is config driven, please refer to `config/simpleCrawler.json` for configuration options.
 
-## How to use
+## How to use consume via NPM
+* `npm install auto-lighthouse` or `npm install -g auto-lighthouse`
 
+ * `auto-lighthouse -h`
+    * Verify that you recieve the help output
+* `auto-lighthouse -u some_url -o true`
+
+## How to use when contributing back to repository
+* Clone the repository
+* Navigate to the project root
+* `npm install`
+* `npm link`
+* `auto-lighthouse -h`
+    * Verify help output
+* Make some changes and pull request
+* `npm unlink auto-lighthouse`
+
+## Alternate way to use via cloning the repository
 * Please modify the `host` field in `config/simpleCrawler.json` with your chosen domain to perform audits on that domain.
 * `npm install`
 * `npm run start`
@@ -27,6 +42,7 @@ This utility is config driven, please refer to `config/simpleCrawler.json` for c
  * `parseHTMLComments`: Controls whether the default discoverResources should scan for new resources inside of HTML comments.
  * `parseScriptTags`: Controls whether the default discoverResources should scan for new resources inside of `<script>` tags.
  * `host`: Determines what hostname the crawler should limit requests to (so long as filterByDomain is true)
+
  ### `runnerConfiguration.json`
  `runnerConfiguration.json` is the configuration file we use to control some of the internals of this package.
  * `autoOpenReports`: Determines whether this package should automatically open generated reports. Default: `false`. Can be set through the config or the CLI.
