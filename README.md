@@ -16,7 +16,8 @@ A utility package to allow automated Lighthouse auditing on a domain.
 * `npm link`
 * `auto-lighthouse -h`
     * Verify help output
-* Make some changes and pull request
+* Make some changes
+* Make a pull request
 * `npm unlink auto-lighthouse`
 
 ## Alternate way to use via cloning the repository
