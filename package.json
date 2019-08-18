@@ -7,7 +7,8 @@
     "auto-lighthouse": "./cli.js"
   },
   "scripts": {
-    "start": "node cli"
+    "start": "node cli",
+    "release": "release-it"
   },
   "repository": {
     "type": "git",
@@ -27,5 +28,20 @@
     "open": "6.4.0",
     "serve-index": "^1.9.1",
     "simplecrawler": "^1.1.8"
+  },
+  "devDependencies": {
+    "@release-it/conventional-changelog": "^1.1.0",
+    "release-it": "^12.3.5"
+  },
+  "release-it": {
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "conventionalcommits",
+        "infile": "CHANGELOG.md"
+      }
+    }
   }
 }
