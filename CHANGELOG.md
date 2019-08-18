@@ -1,3 +1,10 @@
+## [0.1.1](https://github.com/TGiles/auto-lighthouse/compare/0.1.0...0.1.1) (2019-08-18)
+
+
+### Bug Fixes
+
+* output reports relative to process path ([fce58ca](https://github.com/TGiles/auto-lighthouse/commit/fce58ca))
+
 # 0.1.0 (2019-08-18)
 
 
