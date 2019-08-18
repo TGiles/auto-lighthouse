@@ -38,7 +38,12 @@
   },
   "release-it": {
     "github": {
+      "releaseName": "release: ${version}",
       "release": true
+    },
+    "git": {
+      "commitMessage": "release: ${version}",
+      "tagAnnotation": "release: ${version}"
     },
     "plugins": {
       "@release-it/conventional-changelog": {
