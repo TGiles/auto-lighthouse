@@ -40,6 +40,10 @@
     "github": {
       "release": true
     },
+    "git": {
+      "commitMessage": "release: ${version}",
+      "tagAnnotation": "release: ${version}"
+    },
     "plugins": {
       "@release-it/conventional-changelog": {
         "preset": "angular",
