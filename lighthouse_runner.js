@@ -8,7 +8,6 @@ const { URL } = require('url');
 const open = require('open');
 let autoOpen = false;
 let port;
-
 const simpleCrawlerConfig = require('./config/simpleCrawler');
 const runnerConfig = require('./config/runnerConfiguration');
 
@@ -100,9 +99,9 @@ const processResults = (processObj) => {
     }, (err) => {
         if (err) throw err;
         if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
-            console.log('Wrote desktop report: ', currentUrl)
+            console.log('Wrote desktop report: ', currentUrl, 'at: ', tempFilePath);
         } else {
-            console.log('Wrote mobile report: ', currentUrl);
+            console.log('Wrote mobile report: ', currentUrl, 'at: ', tempFilePath);
         }
     });
 };
@@ -158,7 +157,7 @@ const complete = (urlList) => {
     fileTime = fileTime.replace(/,/g, '_');
     fileTime = fileTime.replace(/:/g, "_");
     // tempFilePath is wherever we want to store the generated report
-    let tempFilePath = path.join(__dirname, "lighthouse", fileTime);
+    let tempFilePath = path.join(process.cwd(), "lighthouse", fileTime);
     if (!fs.existsSync(tempFilePath)) {
         fs.mkdirSync(tempFilePath, { recursive: true });
     }
