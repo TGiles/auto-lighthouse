@@ -6,6 +6,8 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 const open = require('open');
+let autoOpen = false;
+let port;
 
 const simpleCrawlerConfig = require('./config/simpleCrawler');
 const runnerConfig = require('./config/runnerConfiguration');
@@ -149,11 +151,12 @@ const complete = (urlList) => {
         chromeFlags: ['--headless'],
         emulatedFormFactor: 'desktop'
     };
-    let fileTime = new Date().toISOString();
-    // Replacing characters that make Windows filesystem sad
+    let fileTime = new Date().toLocaleString();
+    // Replacing characters that make OS sad
+    fileTime = fileTime.replace(/ /g, '');
+    fileTime = fileTime.replace(/\//g, '_');
+    fileTime = fileTime.replace(/,/g, '_');
     fileTime = fileTime.replace(/:/g, "_");
-    fileTime = fileTime.replace(/\./g, "_");
-
     // tempFilePath is wherever we want to store the generated report
     let tempFilePath = path.join(__dirname, "lighthouse", fileTime);
     if (!fs.existsSync(tempFilePath)) {
@@ -167,18 +170,18 @@ const complete = (urlList) => {
     (async () => {
         try {
             let combinedOpts = [desktopOpts, opts];
-            const desktopPromises = await parallelLimit(
+            const promises = await parallelLimit(
                 [
                     processReports(urlList, combinedOpts, tempFilePath)
                 ],
                 2);
-            await Promise.all(desktopPromises);
-            console.log('done with desktop reports!');
+            await Promise.all(promises);
+            console.log('Done with reports!');
         } catch (e) {
             console.error(e);
         }
-        if (runnerConfig.autoOpenReports === true) {
-            openReports(tempFilePath);
+        if (autoOpen) {
+            openReports(port);
         }
     })();
 
@@ -186,13 +189,12 @@ const complete = (urlList) => {
 
 /**
  *  Opens generated reports in your preferred browser as an explorable list
- *
+ *  @param {Number} port Port used by Express
  */
-const openReports = () => {
+const openReports = (port) => {
     const express = require('express');
     const serveIndex = require('serve-index');
     const app = express();
-    const port = 3000;
     app.use(express.static('lighthouse'), serveIndex('lighthouse', { 'icons': true }));
     app.listen(port);
     open('http://localhost:' + port);
@@ -207,7 +209,7 @@ const openReportsWithoutServer = (tempFilePath) => {
     let filePath = tempFilePath;
     if (fs.existsSync(filePath)) {
         fs.readdirSync(filePath).forEach(file => {
-            console.log('opening: ', file);
+            console.log('Opening: ', file);
             let tempPath = path.join(tempFilePath, file);
             open(tempPath);
         });
@@ -216,11 +218,24 @@ const openReportsWithoutServer = (tempFilePath) => {
 /**
  * Main function.
  * This kicks off the Lighthouse Runner process
+ * @param {commander} program - An instance of a Commander.js program
  */
-const main = () => {
+function main(program) {
+    let domainRoot;
+    if (program.open === undefined) {
+        autoOpen = runnerConfig.autoOpenReports;
+    } else {
+        autoOpen = program.open;
+    }
+    if (program.url === undefined) {
+        domainRoot = new URL(simpleCrawlerConfig.host);
+    } else {
+        domainRoot = new URL(program.url)
+    }
+    port = program.port;
     let urlList = [];
-    let domainRoot = new URL(simpleCrawlerConfig.host);
     urlList.push(domainRoot.href);
+    console.log('Pushed: ', domainRoot.href);
     let simpleCrawler = new Crawler(domainRoot.href)
         .on('queueadd', (queueItem) => {
             queueAdd(queueItem, urlList)
@@ -233,7 +248,13 @@ const main = () => {
         simpleCrawler[key] = simpleCrawlerConfig[key];
     }
     simpleCrawler.host = domainRoot.hostname;
+    if (autoOpen) {
+        console.log('Automatically opening reports when done!');
+    } else if (!autoOpen) {
+        console.log('Not automatically opening reports when done!');
+    }
     console.log('Starting simple crawler on', simpleCrawler.host + '!');
     simpleCrawler.start();
 }
-main();
+
+module.exports = main;

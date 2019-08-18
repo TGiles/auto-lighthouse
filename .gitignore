@@ -84,3 +84,4 @@ typings/
 
 lighthouse
 dist
+.vscode
