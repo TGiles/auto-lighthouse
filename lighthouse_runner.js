@@ -172,8 +172,7 @@ const complete = (urlList) => {
                     processReports(urlList, combinedOpts, tempFilePath)
                 ],
                 2);
-            await Promise.all(desktopPromises);
-            console.log('done with desktop reports!');
+            console.log('Done with reports!');
         } catch (e) {
             console.error(e);
         }
@@ -207,7 +206,7 @@ const openReportsWithoutServer = (tempFilePath) => {
     let filePath = tempFilePath;
     if (fs.existsSync(filePath)) {
         fs.readdirSync(filePath).forEach(file => {
-            console.log('opening: ', file);
+            console.log('Opening: ', file);
             let tempPath = path.join(tempFilePath, file);
             open(tempPath);
         });
@@ -221,6 +220,7 @@ const main = () => {
     let urlList = [];
     let domainRoot = new URL(simpleCrawlerConfig.host);
     urlList.push(domainRoot.href);
+    console.log('Pushed: ', domainRoot.href);
     let simpleCrawler = new Crawler(domainRoot.href)
         .on('queueadd', (queueItem) => {
             queueAdd(queueItem, urlList)
