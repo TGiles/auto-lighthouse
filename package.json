@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TGiles/useful_scripts.git"
+    "url": "git+https://github.com/TGiles/auto-lighthouse.git"
   },
   "author": "Tim Giles",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/TGiles/useful_scripts/issues"
+    "url": "https://github.com/TGiles/auto-lighthouse/issues"
   },
-  "homepage": "https://github.com/TGiles/useful_scripts#readme",
+  "homepage": "https://github.com/TGiles/auto-lighthouses#readme",
   "dependencies": {
     "chrome-launcher": "^0.11.2",
     "commander": "^3.0.0",
