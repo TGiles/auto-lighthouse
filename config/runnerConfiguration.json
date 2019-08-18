@@ -1,3 +1,4 @@
 {
-    "autoOpenReports": false
+    "autoOpenReports": false,
+    "port": 9000
 }
