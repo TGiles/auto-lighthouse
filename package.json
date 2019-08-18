@@ -2,9 +2,12 @@
   "name": "auto-lighthouse",
   "version": "0.0.1",
   "description": "A utility package for automating lighthouse reports ",
-  "main": "lighthouse_runner.js",
+  "main": "cli.js",
+  "bin": {
+    "auto-lighthouse": "./cli.js"
+  },
   "scripts": {
-    "start": "node lighthouse_runner"
+    "start": "node cli"
   },
   "repository": {
     "type": "git",
@@ -18,10 +21,11 @@
   "homepage": "https://github.com/TGiles/useful_scripts#readme",
   "dependencies": {
     "chrome-launcher": "^0.11.2",
+    "commander": "^3.0.0",
     "express": "^4.17.1",
     "lighthouse": "^5.2.0",
     "open": "6.4.0",
-    "simplecrawler": "^1.1.8",
-    "serve-index": "^1.9.1"
+    "serve-index": "^1.9.1",
+    "simplecrawler": "^1.1.8"
   }
 }
