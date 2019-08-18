@@ -168,11 +168,12 @@ const complete = (urlList) => {
     (async () => {
         try {
             let combinedOpts = [desktopOpts, opts];
-            const desktopPromises = await parallelLimit(
+            const promises = await parallelLimit(
                 [
                     processReports(urlList, combinedOpts, tempFilePath)
                 ],
                 2);
+            await Promise.all(promises);
             console.log('Done with reports!');
         } catch (e) {
             console.error(e);
