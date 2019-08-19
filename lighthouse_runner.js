@@ -256,4 +256,8 @@ function main(program) {
     simpleCrawler.start();
 }
 
-module.exports = main;
+module.exports = {
+    main,
+    openReports,
+    openReportsWithoutServer
+};
