@@ -16,6 +16,11 @@
   },
   "author": "Tim Giles",
   "license": "GPL-3.0-or-later",
+  "keywords": [
+    "cli",
+    "lighthouse",
+    "reporting"
+  ],
   "bugs": {
     "url": "https://github.com/TGiles/auto-lighthouse/issues"
   },
