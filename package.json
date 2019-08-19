@@ -1,6 +1,6 @@
 {
   "name": "auto-lighthouse",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A utility package for automating lighthouse reports ",
   "main": "cli.js",
   "bin": {
