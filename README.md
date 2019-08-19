@@ -26,7 +26,7 @@ A utility package to allow automated Lighthouse auditing on a domain.
 * `npm run start`
 * Navigate to the `lighthouse` folder
 * Open the appropriate timestamped directory
-* View lighthouse reports for mobile and desktop agents in your browser of choice
+* View lighthouse reports for mobile and desktop agents in your browser
 
 ## Configuration reference
 ### `simpleCrawler.json`
