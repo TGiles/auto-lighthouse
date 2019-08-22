@@ -24,7 +24,7 @@
   "bugs": {
     "url": "https://github.com/TGiles/auto-lighthouse/issues"
   },
-  "homepage": "https://github.com/TGiles/auto-lighthouses#readme",
+  "homepage": "https://tgiles.github.io/auto-lighthouse/",
   "dependencies": {
     "chrome-launcher": "^0.11.2",
     "commander": "^3.0.0",
