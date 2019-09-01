@@ -253,7 +253,7 @@ function main(program) {
         console.log('Not automatically opening reports when done!');
     }
     console.log('Starting simple crawler on', simpleCrawler.host + '!');
-    simpleCrawler.start();
+    return simpleCrawler.start();
 }
 
 module.exports = {
