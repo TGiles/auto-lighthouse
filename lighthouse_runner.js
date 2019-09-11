@@ -138,7 +138,7 @@ const queueAdd = (queueItem, urlList) => {
     }
 };
 
-const complete = (urlList) => {
+const complete = (urlList, autoOpen) => {
     // https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
     // for more information on config options for lighthouse
     let opts = {
@@ -248,7 +248,7 @@ function main(program) {
             queueAdd(queueItem, urlList)
         })
         .on('complete', () => {
-            complete(urlList);
+            complete(urlList, autoOpen);
         });
 
     for (key in simpleCrawlerConfig) {
