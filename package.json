@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node cli",
     "release": "release-it",
-    "test": "nyc --reporter=html --reporter=text ava"
+    "test": "nyc --reporter=html --reporter=text jasmine"
   },
   "repository": {
     "type": "git",
@@ -39,7 +39,7 @@
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
     "@release-it/conventional-changelog": "^1.1.0",
-    "ava": "^2.3.0",
+    "jasmine": "3.4.0",
     "husky": "^3.0.4",
     "nyc": "^14.1.1",
     "release-it": "^12.3.5"
