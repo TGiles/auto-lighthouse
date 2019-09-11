@@ -194,9 +194,15 @@ const openReports = (port) => {
     const express = require('express');
     const serveIndex = require('serve-index');
     const app = express();
-    app.use(express.static('lighthouse'), serveIndex('lighthouse', { 'icons': true }));
-    app.listen(port);
-    open('http://localhost:' + port);
+    try {
+        app.use(express.static('lighthouse'), serveIndex('lighthouse', { 'icons': true }));
+        app.listen(port);
+        open('http://localhost:' + port);
+        return true;
+    } catch (e) {
+        throw e;
+    }
+
 };
 
 /**
@@ -212,7 +218,9 @@ const openReportsWithoutServer = (tempFilePath) => {
             let tempPath = path.join(tempFilePath, file);
             open(tempPath);
         });
+        return true;
     }
+    return false;
 };
 /**
  * Main function.
