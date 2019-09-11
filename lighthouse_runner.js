@@ -240,8 +240,7 @@ function main(program) {
         domainRoot = new URL(program.url)
     }
     port = program.port;
-    let urlList = [];
-    urlList.push(domainRoot.href);
+    let urlList = [domainRoot.href];
     console.log('Pushed: ', domainRoot.href);
     let simpleCrawler = new Crawler(domainRoot.href)
         .on('queueadd', (queueItem) => {
