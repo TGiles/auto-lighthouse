@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "node cli",
-    "release": "release-it"
+    "release": "release-it",
+    "test": "echo \"no tests defined\" && exit 0"
   },
   "repository": {
     "type": "git",
