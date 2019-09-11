@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-const program = require('commander');
+const commander = require('commander');
 const lighthouseRunner = require('./lighthouse_runner');
 const package = require('./package.json');
 
+const program = new commander.Command();
 program.version(package.version);
 program
     .option('-u, --url <url>', 'starting valid url for auto-lighthouse', 'https://blank.org')
@@ -12,3 +13,6 @@ program
 program.parse(process.argv);
 lighthouseRunner.main(program);
 
+module.exports = {
+    program
+};

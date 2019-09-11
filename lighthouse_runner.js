@@ -138,7 +138,7 @@ const queueAdd = (queueItem, urlList) => {
     }
 };
 
-const complete = (urlList) => {
+const complete = (urlList, autoOpen) => {
     // https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
     // for more information on config options for lighthouse
     let opts = {
@@ -194,9 +194,15 @@ const openReports = (port) => {
     const express = require('express');
     const serveIndex = require('serve-index');
     const app = express();
-    app.use(express.static('lighthouse'), serveIndex('lighthouse', { 'icons': true }));
-    app.listen(port);
-    open('http://localhost:' + port);
+    try {
+        app.use(express.static('lighthouse'), serveIndex('lighthouse', { 'icons': true }));
+        app.listen(port);
+        open('http://localhost:' + port);
+        return true;
+    } catch (e) {
+        throw e;
+    }
+
 };
 
 /**
@@ -212,7 +218,9 @@ const openReportsWithoutServer = (tempFilePath) => {
             let tempPath = path.join(tempFilePath, file);
             open(tempPath);
         });
+        return true;
     }
+    return false;
 };
 /**
  * Main function.
@@ -232,15 +240,14 @@ function main(program) {
         domainRoot = new URL(program.url)
     }
     port = program.port;
-    let urlList = [];
-    urlList.push(domainRoot.href);
+    let urlList = [domainRoot.href];
     console.log('Pushed: ', domainRoot.href);
     let simpleCrawler = new Crawler(domainRoot.href)
         .on('queueadd', (queueItem) => {
             queueAdd(queueItem, urlList)
         })
         .on('complete', () => {
-            complete(urlList);
+            complete(urlList, autoOpen);
         });
 
     for (key in simpleCrawlerConfig) {
@@ -253,7 +260,7 @@ function main(program) {
         console.log('Not automatically opening reports when done!');
     }
     console.log('Starting simple crawler on', simpleCrawler.host + '!');
-    simpleCrawler.start();
+    return simpleCrawler.start();
 }
 
 module.exports = {
