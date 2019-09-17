@@ -1,3 +1,11 @@
+# [0.3.0](https://github.com/TGiles/auto-lighthouse/compare/0.2.2...0.3.0) (2019-09-17)
+
+
+### Features
+
+* Add simple tests ([#24](https://github.com/TGiles/auto-lighthouse/issues/24)) ([68000aa](https://github.com/TGiles/auto-lighthouse/commit/68000aa))
+* Add Travis CI ([#23](https://github.com/TGiles/auto-lighthouse/issues/23)) ([0a7b86c](https://github.com/TGiles/auto-lighthouse/commit/0a7b86c))
+
 ## [0.2.2](https://github.com/TGiles/auto-lighthouse/compare/0.2.1...0.2.2) (2019-09-10)
 
 ## [0.2.1](https://github.com/TGiles/auto-lighthouse/compare/0.2.0...0.2.1) (2019-08-22)
