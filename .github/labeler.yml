@@ -1,0 +1,30 @@
+cli:
+- cli.js
+
+runner:
+- lighthouse_runner.js
+
+coverage_server:
+- nyc_server.js
+
+dependencies:
+- package.json
+- package-lock.json
+
+github:
+- .github/**/*.*
+
+travis:
+- .travis.yml
+
+commitlint:
+- commitlint.config.js
+
+readme:
+- README.md
+
+config:
+- config/*.*
+
+tests:
+- spec/**/*.*
