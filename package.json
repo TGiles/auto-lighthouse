@@ -20,7 +20,10 @@
   "keywords": [
     "cli",
     "lighthouse",
-    "reporting"
+    "reporting",
+    "accessibility",
+    "a11y",
+    "automation"
   ],
   "bugs": {
     "url": "https://github.com/TGiles/auto-lighthouse/issues"
