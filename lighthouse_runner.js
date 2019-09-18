@@ -256,7 +256,7 @@ function main(program) {
     simpleCrawler.host = domainRoot.hostname;
     if (autoOpen) {
         console.log('Automatically opening reports when done!');
-    } else if (!autoOpen) {
+    } else {
         console.log('Not automatically opening reports when done!');
     }
     console.log('Starting simple crawler on', simpleCrawler.host + '!');
