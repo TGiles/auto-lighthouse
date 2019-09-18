@@ -1,5 +1,15 @@
 # auto-lighthouse
+[![License](https://badgen.net/github/license/TGiles/auto-lighthouse)](https://github.com/TGiles/auto-lighthouse/LICENSE)
+[![npm version](https://badgen.net/npm/v/auto-lighthouse)](https://www.npmjs.com/package/auto-lighthouse)
+
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=TGiles/auto-lighthouse)](https://dependabot.com)
+[![Master build status](https://badgen.net/github/status/TGiles/auto-lighthouse)](https://github.com/TGiles/auto-lighthouse/actions)
+[![Latest master commit](https://badgen.net/github/last-commit/TGiles/auto-lighthouse/master)](https://github.com/TGiles/auto-lighthouse/commits/master)
+
+[![Open issues](https://badgen.net/github/open-issues/TGiles/auto-lighthouse)](https://github.com/TGiles/auto-lighthouse/issues)
+[![Closed issues](https://badgen.net/github/closed-issues/TGiles/auto-lighthouse)](https://github.com/TGiles/auto-lighthouse/issues?q=is%3Aissue+is%3Aclosed)
+
+
 
 A utility package to allow automated Lighthouse auditing on a domain.
 
