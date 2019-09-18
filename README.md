@@ -1,4 +1,5 @@
 # auto-lighthouse
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=TGiles/auto-lighthouse)](https://dependabot.com)
 
 A utility package to allow automated Lighthouse auditing on a domain.
 
