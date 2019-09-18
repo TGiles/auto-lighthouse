@@ -43,7 +43,7 @@ async function launchChromeAndRunLighthouseAsync(url, opts, config = null) {
  */
 async function processReports(urlList, opts, tempFilePath) {
     try {
-        for (i = 0; i < urlList.length; i++) {
+        for (let i = 0; i < urlList.length; i++) {
             let currentUrl = urlList[i];
             await launchChromeAndRunLighthouseAsync(currentUrl, opts[0])
                 .then(results => {
@@ -237,7 +237,7 @@ function main(program) {
     if (program.url === undefined) {
         domainRoot = new URL(simpleCrawlerConfig.host);
     } else {
-        domainRoot = new URL(program.url)
+        domainRoot = new URL(program.url);
     }
     port = program.port;
     let urlList = [domainRoot.href];
@@ -250,13 +250,13 @@ function main(program) {
             complete(urlList, autoOpen);
         });
 
-    for (key in simpleCrawlerConfig) {
+    for (let key in simpleCrawlerConfig) {
         simpleCrawler[key] = simpleCrawlerConfig[key];
     }
     simpleCrawler.host = domainRoot.hostname;
     if (autoOpen) {
         console.log('Automatically opening reports when done!');
-    } else if (!autoOpen) {
+    } else {
         console.log('Not automatically opening reports when done!');
     }
     console.log('Starting simple crawler on', simpleCrawler.host + '!');
