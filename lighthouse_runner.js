@@ -237,7 +237,7 @@ function main(program) {
     if (program.url === undefined) {
         domainRoot = new URL(simpleCrawlerConfig.host);
     } else {
-        domainRoot = new URL(program.url)
+        domainRoot = new URL(program.url);
     }
     port = program.port;
     let urlList = [domainRoot.href];
