@@ -229,10 +229,10 @@ const openReportsWithoutServer = (tempFilePath) => {
  */
 function main(program) {
     let domainRoot;
-    if (program.open === undefined) {
+    if (program.express === undefined) {
         autoOpen = runnerConfig.autoOpenReports;
     } else {
-        autoOpen = program.open;
+        autoOpen = program.express;
     }
     if (program.url === undefined) {
         domainRoot = new URL(simpleCrawlerConfig.host);
