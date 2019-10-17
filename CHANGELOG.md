@@ -1,3 +1,10 @@
+## [0.3.3](https://github.com/TGiles/auto-lighthouse/compare/0.3.2...0.3.3) (2019-10-17)
+
+
+### Bug Fixes
+
+* fix auto open not working as expected ([3212aee](https://github.com/TGiles/auto-lighthouse/commit/3212aee))
+
 ## [0.3.2](https://github.com/TGiles/auto-lighthouse/compare/0.3.1...0.3.2) (2019-09-27)
 
 ## [0.3.1](https://github.com/TGiles/auto-lighthouse/compare/0.3.0...0.3.1) (2019-09-18)
