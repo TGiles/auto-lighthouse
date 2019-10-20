@@ -80,11 +80,11 @@ async function processReports(urlList, opts, tempFilePath) {
 };
 
 const processResults = (processObj) => {
-    let currentUrl = processObj.currentUrl;
+    let currentUrl = processObj.currentUrl.href;
     let opts = processObj.opts;
     let tempFilePath = processObj.tempFilePath;
     let results = processObj.results;
-    let splitUrl = processObj.currentUrl.split('//');
+    let splitUrl = processObj.currentUrl.href.split('//');
     let replacedUrl = splitUrl[1].replace(/\//g, "_");
     let report = generateReport.generateReportHtml(results);
     let filePath;
@@ -235,14 +235,17 @@ function main(program) {
         autoOpen = program.express;
     }
     if (program.url === undefined) {
-        domainRoot = new URL(simpleCrawlerConfig.host);
+        domainRoot.push(new URL(simpleCrawlerConfig.host));
     } else {
-        domainRoot = new URL(program.url);
+        program.url.forEach(_url => {
+            domainRoot.push(new URL(_url));
+        });
+        // domainRoot = new URL(program.url)
     }
     port = program.port;
-    let urlList = [domainRoot.href];
-    console.log('Pushed: ', domainRoot.href);
-    let simpleCrawler = new Crawler(domainRoot.href)
+    // let urlList = [domainRoot.href];
+    
+    let simpleCrawler = new Crawler(domainRoot[0].host)
         .on('queueadd', (queueItem) => {
             queueAdd(queueItem, urlList)
         })
@@ -253,7 +256,16 @@ function main(program) {
     for (let key in simpleCrawlerConfig) {
         simpleCrawler[key] = simpleCrawlerConfig[key];
     }
-    simpleCrawler.host = domainRoot.hostname;
+    // simpleCrawler.ignoreWWWDomain = true;
+    let urlList = [];
+    domainRoot.forEach(root => {
+        urlList.push(root.hostname);
+        simpleCrawler.domainWhitelist.push(root.hostname);
+        simpleCrawler.queueURL(root.href);
+        
+    });
+    // simpleCrawler.host = domainRoot.hostname;
+    
     if (autoOpen) {
         console.log('Automatically opening reports when done!');
     } else {
