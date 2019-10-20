@@ -19,5 +19,5 @@ jobs:
         stale-pr-label: 'stale-pr'
         days-before-stale: 30
         days-before-close: 5
-        exempt-issue-label: 'approved-work'
-        exempt-pr-label: 'approved-work'
+        exempt-issue-label: 'approved'
+        exempt-pr-label: 'approved'
