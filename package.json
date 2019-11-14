@@ -1,7 +1,7 @@
 {
   "name": "auto-lighthouse",
   "version": "0.3.4",
-  "description": "A utility package for automating lighthouse reports ",
+  "description": "A CLI for crawling a domain and generating both mobile and desktop reports for each page.",
   "main": "cli.js",
   "bin": {
     "auto-lighthouse": "./cli.js"
