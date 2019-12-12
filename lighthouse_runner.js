@@ -230,6 +230,7 @@ const openReportsWithoutServer = (tempFilePath) => {
  */
 function main(program) {
     let domainRoot;
+    let simpleCrawler;
     if (program.express === undefined) {
         autoOpen = runnerConfig.autoOpenReports;
     } else {
@@ -238,33 +239,54 @@ function main(program) {
     if (program.url === undefined) {
         domainRoot.push(new URL(simpleCrawlerConfig.host));
     } else {
+        if (Array.isArray(program.url)) {
+            domainRoot = [];
         program.url.forEach(_url => {
             domainRoot.push(new URL(_url));
         });
-        // domainRoot = new URL(program.url)
+        } else {
+            domainRoot = new URL(program.url)
     }
+    }
+    let isDomainRootAnArray = Array.isArray(domainRoot);
     port = program.port;
-    // let urlList = [domainRoot.href];
+    if (isDomainRootAnArray) {
+        simpleCrawler = Crawler(domainRoot[0].href)
+            .on('queueadd', (queueItem) => {
+                queueAdd(queueItem, urlList)
+            })
+            .on('complete', () => {
+                complete(urlList, autoOpen);
+            });
     
-    let simpleCrawler = new Crawler(domainRoot[0].host)
+    } else {
+        simpleCrawler = Crawler(domainRoot.href)
         .on('queueadd', (queueItem) => {
             queueAdd(queueItem, urlList)
         })
         .on('complete', () => {
             complete(urlList, autoOpen);
         });
+    }
 
     for (let key in simpleCrawlerConfig) {
         simpleCrawler[key] = simpleCrawlerConfig[key];
     }
-    // simpleCrawler.ignoreWWWDomain = true;
+    simpleCrawler.ignoreWWWDomain = true;
     let urlList = [];
+    if (isDomainRootAnArray) {
+        if (domainRoot.length > 1) {
     domainRoot.forEach(root => {
-        urlList.push(root.hostname);
+                urlList.push(root.href);
         simpleCrawler.domainWhitelist.push(root.hostname);
         simpleCrawler.queueURL(root.href);
+            });
+        } else {
+            urlList.push(domainRoot[0].href);
+        }
+    } else {
+    }
         
-    });
     // simpleCrawler.host = domainRoot.hostname;
     
     if (autoOpen) {
