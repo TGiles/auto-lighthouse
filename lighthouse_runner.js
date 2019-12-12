@@ -131,8 +131,9 @@ const parallelLimit = async (funcList, limit = 4) => {
  * @param {*} queueItem a URL that has been picked up by the crawler
  */
 const queueAdd = (queueItem, urlList) => {
-    const regex = /\.(css|jpg|pdf|docx|js|png|ico|gif|svg|psd|ai|zip|gz|zx|src|cassette|mini-profiler|axd|woff|woff2|)/i;
-    if (!queueItem.uriPath.match(regex)) {
+    let fileExtension = queueItem.uriPath.split('/');
+    const regex = /\.(css|jpg|jpeg|pdf|docx|js|png|ico|gif|svg|psd|ai|zip|gz|zx|src|cassette|mini-profiler|axd|woff|woff2|eot|ttf)/i;
+    if (!fileExtension[fileExtension.length - 1].match(regex)) {
         urlList.push(queueItem.url);
         console.log("Pushed: ", queueItem.url);
     }
