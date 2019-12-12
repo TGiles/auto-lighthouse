@@ -80,11 +80,11 @@ async function processReports(urlList, opts, tempFilePath) {
 };
 
 const processResults = (processObj) => {
-    let currentUrl = processObj.currentUrl.href;
+    let currentUrl = processObj.currentUrl;
     let opts = processObj.opts;
     let tempFilePath = processObj.tempFilePath;
     let results = processObj.results;
-    let splitUrl = processObj.currentUrl.href.split('//');
+    let splitUrl = processObj.currentUrl.split('//');
     let replacedUrl = splitUrl[1].replace(/\//g, "_");
     let report = generateReport.generateReportHtml(results);
     let filePath;
