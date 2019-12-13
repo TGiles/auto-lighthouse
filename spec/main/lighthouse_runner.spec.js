@@ -62,7 +62,30 @@ describe("main", () => {
     };
     expect(() => { runner.main(mockProgram);}).toThrowError(errorMessage);
   });
-  it('should not throw an error when using ')
+  it('should not throw an error when the URL is an array of one', () => {
+    let runner = require('../../lighthouse_runner');
+    let mockProgram = {
+      url: ['https://tgiles.github.io'],
+      port: 8001
+    }
+    spyOn(runner, "main").and.callThrough();
+
+    let result = runner.main(mockProgram);
+    expect(runner.main).toHaveBeenCalledWith(mockProgram);
+    expect(result).toBeTruthy();
+  });
+  it('should not throw an error when the URL is an array of two or more', () => {
+    let runner = require('../../lighthouse_runner');
+    let mockProgram = {
+      url: ['https://tgiles.github.io', 'https://blankslate.io'],
+      port: 8001
+    }
+    spyOn(runner, "main").and.callThrough();
+
+    let result = runner.main(mockProgram);
+    expect(runner.main).toHaveBeenCalledWith(mockProgram);
+    expect(result).toBeTruthy();
+  });
 });
 describe("openReportsWithoutServer", () => {
   let runner = null;
