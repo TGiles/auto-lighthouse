@@ -8,5 +8,5 @@
     "respectRobotsTxt": true,
     "parseHTMLComments": false,
     "parseScriptTags": false,
-    "host": "https://blank.org/"
+    "ignoreWWWDomain": true
 }

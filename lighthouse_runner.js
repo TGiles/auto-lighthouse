@@ -131,8 +131,9 @@ const parallelLimit = async (funcList, limit = 4) => {
  * @param {*} queueItem a URL that has been picked up by the crawler
  */
 const queueAdd = (queueItem, urlList) => {
-    const regex = /\.(css|jpg|pdf|docx|js|png|ico|gif|svg|psd|ai|zip|gz|zx|src|cassette|mini-profiler|axd|woff|woff2|)/i;
-    if (!queueItem.uriPath.match(regex)) {
+    let fileExtension = queueItem.uriPath.split('/');
+    const regex = /\.(css|jpg|jpeg|pdf|docx|js|png|ico|gif|svg|psd|ai|zip|gz|zx|src|cassette|mini-profiler|axd|woff|woff2|eot|ttf)/i;
+    if (!fileExtension[fileExtension.length - 1].match(regex)) {
         urlList.push(queueItem.url);
         console.log("Pushed: ", queueItem.url);
     }
@@ -229,31 +230,67 @@ const openReportsWithoutServer = (tempFilePath) => {
  */
 function main(program) {
     let domainRoot;
+    let simpleCrawler;
     if (program.express === undefined) {
         autoOpen = runnerConfig.autoOpenReports;
     } else {
         autoOpen = program.express;
     }
     if (program.url === undefined) {
-        domainRoot = new URL(simpleCrawlerConfig.host);
+        throw new Error('No URL given, quitting!');
     } else {
-        domainRoot = new URL(program.url);
+        if (Array.isArray(program.url)) {
+            domainRoot = [];
+            program.url.forEach(_url => {
+                domainRoot.push(new URL(_url));
+            });
+        } else {
+            domainRoot = new URL(program.url)
+        }
     }
+    let isDomainRootAnArray = Array.isArray(domainRoot);
     port = program.port;
-    let urlList = [domainRoot.href];
-    console.log('Pushed: ', domainRoot.href);
-    let simpleCrawler = new Crawler(domainRoot.href)
-        .on('queueadd', (queueItem) => {
-            queueAdd(queueItem, urlList)
-        })
-        .on('complete', () => {
-            complete(urlList, autoOpen);
-        });
+    if (isDomainRootAnArray) {
+        simpleCrawler = Crawler(domainRoot[0].href)
+            .on('queueadd', (queueItem) => {
+                queueAdd(queueItem, urlList)
+            })
+            .on('complete', () => {
+                complete(urlList, autoOpen);
+            });
+
+    } else {
+        simpleCrawler = Crawler(domainRoot.href)
+            .on('queueadd', (queueItem) => {
+                queueAdd(queueItem, urlList)
+            })
+            .on('complete', () => {
+                complete(urlList, autoOpen);
+            });
+    }
 
     for (let key in simpleCrawlerConfig) {
         simpleCrawler[key] = simpleCrawlerConfig[key];
     }
-    simpleCrawler.host = domainRoot.hostname;
+    simpleCrawler.ignoreWWWDomain = true;
+    let urlList = [];
+    if (isDomainRootAnArray) {
+        if (domainRoot.length > 1) {
+            domainRoot.forEach(root => {
+                if (!simpleCrawler.queue.includes(root)) {
+                    simpleCrawler.domainWhitelist.push(root.hostname);
+                    simpleCrawler.queueURL(root.href);
+                }
+            });
+        } else {
+            urlList.push(domainRoot[0].href);
+        }
+    } else {
+        urlList.push(domainRoot.href);
+    }
+
+    // simpleCrawler.host = domainRoot.hostname;
+
     if (autoOpen) {
         console.log('Automatically opening reports when done!');
     } else {
