@@ -237,7 +237,7 @@ function main(program) {
         autoOpen = program.express;
     }
     if (program.url === undefined) {
-        domainRoot.push(new URL(simpleCrawlerConfig.host));
+        throw new Error('No URL given, quitting!');
     } else {
         if (Array.isArray(program.url)) {
             domainRoot = [];
