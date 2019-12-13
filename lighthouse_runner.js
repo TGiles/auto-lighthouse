@@ -241,12 +241,12 @@ function main(program) {
     } else {
         if (Array.isArray(program.url)) {
             domainRoot = [];
-        program.url.forEach(_url => {
-            domainRoot.push(new URL(_url));
-        });
+            program.url.forEach(_url => {
+                domainRoot.push(new URL(_url));
+            });
         } else {
             domainRoot = new URL(program.url)
-    }
+        }
     }
     let isDomainRootAnArray = Array.isArray(domainRoot);
     port = program.port;
@@ -258,15 +258,15 @@ function main(program) {
             .on('complete', () => {
                 complete(urlList, autoOpen);
             });
-    
+
     } else {
         simpleCrawler = Crawler(domainRoot.href)
-        .on('queueadd', (queueItem) => {
-            queueAdd(queueItem, urlList)
-        })
-        .on('complete', () => {
-            complete(urlList, autoOpen);
-        });
+            .on('queueadd', (queueItem) => {
+                queueAdd(queueItem, urlList)
+            })
+            .on('complete', () => {
+                complete(urlList, autoOpen);
+            });
     }
 
     for (let key in simpleCrawlerConfig) {
@@ -276,9 +276,11 @@ function main(program) {
     let urlList = [];
     if (isDomainRootAnArray) {
         if (domainRoot.length > 1) {
-    domainRoot.forEach(root => {
-        simpleCrawler.domainWhitelist.push(root.hostname);
-        simpleCrawler.queueURL(root.href);
+            domainRoot.forEach(root => {
+                if (!simpleCrawler.queue.includes(root)) {
+                    simpleCrawler.domainWhitelist.push(root.hostname);
+                    simpleCrawler.queueURL(root.href);
+                }
             });
         } else {
             urlList.push(domainRoot[0].href);
@@ -286,9 +288,9 @@ function main(program) {
     } else {
         urlList.push(domainRoot.href);
     }
-        
+
     // simpleCrawler.host = domainRoot.hostname;
-    
+
     if (autoOpen) {
         console.log('Automatically opening reports when done!');
     } else {
