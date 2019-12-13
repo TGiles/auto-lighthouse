@@ -11,7 +11,7 @@
 
 
 
-A CLI for crawling a domain and generating both mobile and desktop reports for each page.
+A CLI for crawling one or more domains and generating both mobile and desktop reports for each page.
 
 ## How to use consume via NPM
 * `npm install auto-lighthouse` or `npm install -g auto-lighthouse`
