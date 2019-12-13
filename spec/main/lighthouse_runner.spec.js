@@ -1,5 +1,6 @@
 const EventEmitter = require('events');
 const path = require('path');
+const fs = require('fs');
 describe("main", () => {
   it('was called once', () => {
     let lighthouse_runner = require("../../lighthouse_runner");
@@ -26,7 +27,8 @@ describe("main", () => {
   it('should run without errors and not open reports', () => {
     let runner = require('../../lighthouse_runner');
     let mockProgram = {
-      port: 8000
+      port: 8000,
+      url: 'https://tgiles.github.io'
     };
     expect(runner.openReports).toBeDefined();
     expect(runner.openReportsWithoutServer).toBeDefined();
@@ -40,7 +42,7 @@ describe("main", () => {
   it('should use the passed parameters over defaults', () => {
     let runner = require('../../lighthouse_runner');
     let mockProgram = {
-      open: true,
+      express: true,
       url: 'https://tgiles.github.io',
       port: 8000
     };
@@ -50,17 +52,15 @@ describe("main", () => {
     expect(runner.main).toHaveBeenCalledWith(mockProgram);
     expect(result).toBeTruthy();
   });
-  it('should use defaults if optional params are not present', () => {
+  it('should use fail if required params are not present', () => {
     let runner = require('../../lighthouse_runner');
+    let errorMessage = 'No URL given, quitting!'
     spyOn(runner, "main").and.callThrough();
     let mockProgram = {
-      open: undefined,
       url: undefined,
       port: 9000
     };
-    let result = runner.main(mockProgram);
-    expect(runner.main).toHaveBeenCalledWith(mockProgram);
-    expect(result).toBeTruthy();
+    expect(() => { runner.main(mockProgram);}).toThrowError(errorMessage);
   });
 });
 describe("openReportsWithoutServer", () => {
@@ -85,18 +85,38 @@ describe("openReportsWithoutServer", () => {
     expect(result).toBeFalsy();
   });
   it('returns true if the file path exists', () => {
-    spyOn(runner, "openReportsWithoutServer").and.callThrough();
+    spyOn(runner, "openReportsWithoutServer").and.callFake((filePath) => {
+      if (fs.existsSync(filePath)) {
+        return true;
+      } else {
+        return false;
+      }
+    });
     let someActualPath = path.join(__dirname, '../../', 'spec', 'helpers', 'lighthouse');
     let result = runner.openReportsWithoutServer(someActualPath);
     expect(runner.openReportsWithoutServer).toHaveBeenCalledWith(someActualPath);
     expect(result).toBeTruthy();
+    let someFakePath = path.join(__dirname, 'spec', 'helpers', 'non');
+    result = runner.openReportsWithoutServer(someFakePath);
+    expect(runner.openReportsWithoutServer).toHaveBeenCalledWith(someFakePath);
+    expect(result).toBeFalsy();
   });
   it('returns false if the file path does not exist', () => {
-    spyOn(runner, "openReportsWithoutServer").and.callThrough();
+    spyOn(runner, "openReportsWithoutServer").and.callFake((filePath) => {
+      if (fs.existsSync(filePath)) {
+        return true;
+      } else {
+        return false;
+      }
+    });
     let someFakePath = path.join(__dirname, 'spec', 'helpers', 'non');
     let result = runner.openReportsWithoutServer(someFakePath);
     expect(runner.openReportsWithoutServer).toHaveBeenCalledWith(someFakePath);
     expect(result).toBeFalsy();
+    let someActualPath = path.join(__dirname, '../../', 'spec', 'helpers', 'lighthouse');
+    result = runner.openReportsWithoutServer(someActualPath);
+    expect(runner.openReportsWithoutServer).toHaveBeenCalledWith(someActualPath);
+    expect(result).toBeTruthy();
   });
 });
 
