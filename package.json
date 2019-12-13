@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node cli",
     "release": "release-it",
-    "test": "nyc --reporter=html --reporter=text jasmine"
+    "test": "nyc --reporter=html --reporter=text jasmine",
+    "coverage": "npm run test && node nyc_server"
   },
   "repository": {
     "type": "git",
