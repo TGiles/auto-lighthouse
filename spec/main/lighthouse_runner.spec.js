@@ -52,7 +52,7 @@ describe("main", () => {
     expect(runner.main).toHaveBeenCalledWith(mockProgram);
     expect(result).toBeTruthy();
   });
-  it('should use fail if required params are not present', () => {
+  it('should fail if required params are not present', () => {
     let runner = require('../../lighthouse_runner');
     let errorMessage = 'No URL given, quitting!'
     spyOn(runner, "main").and.callThrough();
@@ -62,6 +62,7 @@ describe("main", () => {
     };
     expect(() => { runner.main(mockProgram);}).toThrowError(errorMessage);
   });
+  it('should not throw an error when using ')
 });
 describe("openReportsWithoutServer", () => {
   let runner = null;
