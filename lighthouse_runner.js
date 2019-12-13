@@ -277,7 +277,6 @@ function main(program) {
     if (isDomainRootAnArray) {
         if (domainRoot.length > 1) {
     domainRoot.forEach(root => {
-                urlList.push(root.href);
         simpleCrawler.domainWhitelist.push(root.hostname);
         simpleCrawler.queueURL(root.href);
             });
