@@ -284,6 +284,7 @@ function main(program) {
             urlList.push(domainRoot[0].href);
         }
     } else {
+        urlList.push(domainRoot.href);
     }
         
     // simpleCrawler.host = domainRoot.hostname;
