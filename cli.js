@@ -6,10 +6,10 @@ const package = require('./package.json');
 const program = new commander.Command();
 program.version(package.version);
 program
-    .option('-u, --url <urls>', 'starting valid url for auto-lighthouse', 
-    ['https://blank.org', 
-    'https://this-page-intentionally-left-blank.org/',
-    'https://tgiles.github.io' ])
+    .option('-u, --url <urls>', 'starting valid url for auto-lighthouse',
+        [
+            'https://tgiles.github.io'
+        ])
     .option('-e, --express <open>', 'flag for auto opening reports in local express server')
     .option('-p, --port <port>', 'port for local express server', 9000);
 
