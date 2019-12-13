@@ -1,3 +1,26 @@
+# [1.0.0](https://github.com/TGiles/auto-lighthouse/compare/0.3.5...1.0.0) (2019-12-13)
+
+
+### Features
+
+* add auto open test coverage ([#50](https://github.com/TGiles/auto-lighthouse/issues/50)) ([fa7c13c](https://github.com/TGiles/auto-lighthouse/commit/fa7c13c))
+
+
+* feat!: add crawling and auditing multiple domains (#51) ([c8e0a12](https://github.com/TGiles/auto-lighthouse/commit/c8e0a12)), closes [#51](https://github.com/TGiles/auto-lighthouse/issues/51)
+
+
+### BREAKING CHANGES
+
+* Removes the dependency on the crawler config
+
+* chore: update package-lock
+
+* refactor: update tests due to breaking change
+
+* chore: fix typo in test
+
+* test: add tests for differently sized URL arrays
+
 ## [0.3.5](https://github.com/TGiles/auto-lighthouse/compare/0.3.4...0.3.5) (2019-11-14)
 
 ## [0.3.4](https://github.com/TGiles/auto-lighthouse/compare/0.3.3...0.3.4) (2019-11-08)
