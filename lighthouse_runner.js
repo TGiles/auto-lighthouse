@@ -258,7 +258,7 @@ function main(program) {
                 domainRoot.push(new URL(_url));
             });
         } else {
-            domainRoot = new URL(program.url)
+            domainRoot = new URL(program.url);
         }
     }
     let isDomainRootAnArray = Array.isArray(domainRoot);
