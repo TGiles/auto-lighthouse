@@ -8,6 +8,7 @@ const { URL } = require('url');
 const open = require('open');
 let autoOpen = false;
 let port;
+let outputMode;
 const simpleCrawlerConfig = require('./config/simpleCrawler');
 const runnerConfig = require('./config/runnerConfiguration');
 
@@ -89,12 +90,12 @@ const processResults = (processObj) => {
     let results = processObj.results;
     let splitUrl = processObj.currentUrl.split('//');
     let replacedUrl = splitUrl[1].replace(/\//g, "_");
-    let report = generateReport.generateReportHtml(results);
+    let report = generateReport.generateReport(results, opts.output);
     let filePath;
     if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
-        filePath = path.join(tempFilePath, replacedUrl + '.desktop.report.html');
+        filePath = path.join(tempFilePath, replacedUrl + '.desktop.report.' + opts.output);
     } else {
-        filePath = path.join(tempFilePath, replacedUrl + '.mobile.report.html');
+        filePath = path.join(tempFilePath, replacedUrl + '.mobile.report.' + opts.output);
     }
     // https://stackoverflow.com/questions/34811222/writefile-no-such-file-or-directory
     fs.writeFile(filePath, report, {
@@ -149,15 +150,17 @@ const complete = (urlList, autoOpen) => {
     /* 
     ? https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
     ? for more information on config options for lighthouse
-    */ 
+    */
     let opts = {
         extends: 'lighthouse:default',
         chromeFlags: ['--headless'],
+        output: outputMode
     };
     let desktopOpts = {
         extends: 'lighthouse:default',
         chromeFlags: ['--headless'],
-        emulatedFormFactor: 'desktop'
+        emulatedFormFactor: 'desktop',
+        output: outputMode
     };
     let fileTime = new Date().toLocaleString();
     // Replacing characters that make OS sad
@@ -240,6 +243,7 @@ const openReportsWithoutServer = (tempFilePath) => {
 function main(program) {
     let domainRoot;
     let simpleCrawler;
+    outputMode = program.format;
     if (program.express === undefined) {
         autoOpen = runnerConfig.autoOpenReports;
     } else {
