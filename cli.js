@@ -10,7 +10,8 @@ program
         [
             'https://tgiles.github.io'
         ])
-    .option('-e, --express <open>', 'flag for auto opening reports in local express server')
+    .option('--format <mode>', 'output format of Lighthouse reports. Allowed values: html, json, csv.', 'html')
+    .option('-e, --express <open>', 'flag for auto opening reports in local express server. Allowed values: true, false.')
     .option('-p, --port <port>', 'port for local express server', 9000);
 
 program.parse(process.argv);
