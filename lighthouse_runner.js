@@ -8,6 +8,7 @@ const { URL } = require('url');
 const open = require('open');
 let autoOpen = false;
 let port;
+let outputMode;
 const simpleCrawlerConfig = require('./config/simpleCrawler');
 const runnerConfig = require('./config/runnerConfiguration');
 
@@ -19,6 +20,7 @@ const runnerConfig = require('./config/runnerConfiguration');
  * @param {*} [config=null] Any special options passed to Lighthouse
  * @returns Lighthouse Result object (LHR)
  */
+/* istanbul ignore next */
 async function launchChromeAndRunLighthouseAsync(url, opts, config = null) {
     try {
         const chrome = await chromeLauncher.launch({
@@ -41,6 +43,7 @@ async function launchChromeAndRunLighthouseAsync(url, opts, config = null) {
  * @param {[{}]} opts Any options to pass into Chrome
  * @param {string} tempFilePath A path to store the resulting HTML files
  */
+/* istanbul ignore next */
 async function processReports(urlList, opts, tempFilePath) {
     try {
         for (let i = 0; i < urlList.length; i++) {
@@ -79,6 +82,7 @@ async function processReports(urlList, opts, tempFilePath) {
     }
 };
 
+/* istanbul ignore next */
 const processResults = (processObj) => {
     let currentUrl = processObj.currentUrl;
     let opts = processObj.opts;
@@ -86,12 +90,12 @@ const processResults = (processObj) => {
     let results = processObj.results;
     let splitUrl = processObj.currentUrl.split('//');
     let replacedUrl = splitUrl[1].replace(/\//g, "_");
-    let report = generateReport.generateReportHtml(results);
+    let report = generateReport.generateReport(results, opts.output);
     let filePath;
     if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
-        filePath = path.join(tempFilePath, replacedUrl + '.desktop.report.html');
+        filePath = path.join(tempFilePath, replacedUrl + '.desktop.report.' + opts.output);
     } else {
-        filePath = path.join(tempFilePath, replacedUrl + '.mobile.report.html');
+        filePath = path.join(tempFilePath, replacedUrl + '.mobile.report.' + opts.output);
     }
     // https://stackoverflow.com/questions/34811222/writefile-no-such-file-or-directory
     fs.writeFile(filePath, report, {
@@ -113,6 +117,7 @@ const processResults = (processObj) => {
  * @param {number} [limit=4] The number of parallel processes to execute the funcList
  * 
  */
+/* istanbul ignore next */
 const parallelLimit = async (funcList, limit = 4) => {
     let inFlight = new Set();
     return funcList.map(async (func, i) => {
@@ -130,6 +135,7 @@ const parallelLimit = async (funcList, limit = 4) => {
  *
  * @param {*} queueItem a URL that has been picked up by the crawler
  */
+/* istanbul ignore next */
 const queueAdd = (queueItem, urlList) => {
     let fileExtension = queueItem.uriPath.split('/');
     const regex = /\.(css|jpg|jpeg|pdf|docx|js|png|ico|gif|svg|psd|ai|zip|gz|zx|src|cassette|mini-profiler|axd|woff|woff2|eot|ttf)/i;
@@ -139,17 +145,22 @@ const queueAdd = (queueItem, urlList) => {
     }
 };
 
+/* istanbul ignore next */
 const complete = (urlList, autoOpen) => {
-    // https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
-    // for more information on config options for lighthouse
+    /* 
+    ? https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
+    ? for more information on config options for lighthouse
+    */
     let opts = {
         extends: 'lighthouse:default',
         chromeFlags: ['--headless'],
+        output: outputMode
     };
     let desktopOpts = {
         extends: 'lighthouse:default',
         chromeFlags: ['--headless'],
-        emulatedFormFactor: 'desktop'
+        emulatedFormFactor: 'desktop',
+        output: outputMode
     };
     let fileTime = new Date().toLocaleString();
     // Replacing characters that make OS sad
@@ -213,6 +224,7 @@ const openReports = (port) => {
  */
 const openReportsWithoutServer = (tempFilePath) => {
     let filePath = tempFilePath;
+    /* istanbul ignore next */
     if (fs.existsSync(filePath)) {
         fs.readdirSync(filePath).forEach(file => {
             console.log('Opening: ', file);
@@ -231,6 +243,7 @@ const openReportsWithoutServer = (tempFilePath) => {
 function main(program) {
     let domainRoot;
     let simpleCrawler;
+    outputMode = program.format;
     if (program.express === undefined) {
         autoOpen = runnerConfig.autoOpenReports;
     } else {
@@ -245,7 +258,7 @@ function main(program) {
                 domainRoot.push(new URL(_url));
             });
         } else {
-            domainRoot = new URL(program.url)
+            domainRoot = new URL(program.url);
         }
     }
     let isDomainRootAnArray = Array.isArray(domainRoot);
