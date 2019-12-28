@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/TGiles/auto-lighthouse/compare/1.0.0...1.1.0) (2019-12-28)
+
+
+### Features
+
+* allow multiple output formats through CLI ([#55](https://github.com/TGiles/auto-lighthouse/issues/55)) ([d6172eb](https://github.com/TGiles/auto-lighthouse/commit/d6172eb))
+
 # [1.0.0](https://github.com/TGiles/auto-lighthouse/compare/0.3.5...1.0.0) (2019-12-13)
 
 
