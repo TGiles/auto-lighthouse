@@ -19,6 +19,7 @@ const runnerConfig = require('./config/runnerConfiguration');
  * @param {*} [config=null] Any special options passed to Lighthouse
  * @returns Lighthouse Result object (LHR)
  */
+/* istanbul ignore next */
 async function launchChromeAndRunLighthouseAsync(url, opts, config = null) {
     try {
         const chrome = await chromeLauncher.launch({
@@ -41,6 +42,7 @@ async function launchChromeAndRunLighthouseAsync(url, opts, config = null) {
  * @param {[{}]} opts Any options to pass into Chrome
  * @param {string} tempFilePath A path to store the resulting HTML files
  */
+/* istanbul ignore next */
 async function processReports(urlList, opts, tempFilePath) {
     try {
         for (let i = 0; i < urlList.length; i++) {
@@ -79,6 +81,7 @@ async function processReports(urlList, opts, tempFilePath) {
     }
 };
 
+/* istanbul ignore next */
 const processResults = (processObj) => {
     let currentUrl = processObj.currentUrl;
     let opts = processObj.opts;
@@ -113,6 +116,7 @@ const processResults = (processObj) => {
  * @param {number} [limit=4] The number of parallel processes to execute the funcList
  * 
  */
+/* istanbul ignore next */
 const parallelLimit = async (funcList, limit = 4) => {
     let inFlight = new Set();
     return funcList.map(async (func, i) => {
@@ -130,6 +134,7 @@ const parallelLimit = async (funcList, limit = 4) => {
  *
  * @param {*} queueItem a URL that has been picked up by the crawler
  */
+/* istanbul ignore next */
 const queueAdd = (queueItem, urlList) => {
     let fileExtension = queueItem.uriPath.split('/');
     const regex = /\.(css|jpg|jpeg|pdf|docx|js|png|ico|gif|svg|psd|ai|zip|gz|zx|src|cassette|mini-profiler|axd|woff|woff2|eot|ttf)/i;
@@ -139,6 +144,7 @@ const queueAdd = (queueItem, urlList) => {
     }
 };
 
+/* istanbul ignore next */
 const complete = (urlList, autoOpen) => {
     /* 
     ? https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
@@ -215,6 +221,7 @@ const openReports = (port) => {
  */
 const openReportsWithoutServer = (tempFilePath) => {
     let filePath = tempFilePath;
+    /* istanbul ignore next */
     if (fs.existsSync(filePath)) {
         fs.readdirSync(filePath).forEach(file => {
             console.log('Opening: ', file);
