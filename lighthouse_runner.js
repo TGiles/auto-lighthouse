@@ -140,8 +140,10 @@ const queueAdd = (queueItem, urlList) => {
 };
 
 const complete = (urlList, autoOpen) => {
-    // https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
-    // for more information on config options for lighthouse
+    /* 
+    ? https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
+    ? for more information on config options for lighthouse
+    */ 
     let opts = {
         extends: 'lighthouse:default',
         chromeFlags: ['--headless'],
