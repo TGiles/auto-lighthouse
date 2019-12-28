@@ -6,7 +6,7 @@ const package = require('./package.json');
 const program = new commander.Command();
 program.version(package.version);
 program
-    .option('-u, --url <urls>', 'starting valid url for auto-lighthouse',
+    .option('-u, --url <urls>', 'starting valid url(s) for auto-lighthouse',
         [
             'https://tgiles.github.io'
         ])
