@@ -44,7 +44,7 @@
     "@commitlint/config-conventional": "^8.1.0",
     "@release-it/conventional-changelog": "^1.1.0",
     "jasmine": "3.5.0",
-    "husky": "^3.0.4",
+    "husky": "^4.0.0",
     "nyc": "^15.0.0",
     "release-it": "^12.3.5"
   },
