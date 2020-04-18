@@ -1,3 +1,10 @@
+## [1.1.6](https://github.com/TGiles/auto-lighthouse/compare/1.1.5...1.1.6) (2020-04-18)
+
+
+### Reverts
+
+* Revert "build: update dependencies" ([00e4857](https://github.com/TGiles/auto-lighthouse/commit/00e4857a6db98761019c18e25813b7e73a34a732))
+
 ## [1.1.5](https://github.com/TGiles/auto-lighthouse/compare/1.1.4...1.1.5) (2020-04-02)
 
 ## [1.1.4](https://github.com/TGiles/auto-lighthouse/compare/1.1.3...1.1.4) (2020-03-12)
