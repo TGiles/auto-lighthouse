@@ -1,3 +1,5 @@
+## [1.1.7](https://github.com/TGiles/auto-lighthouse/compare/1.1.6...1.1.7) (2020-05-12)
+
 ## [1.1.6](https://github.com/TGiles/auto-lighthouse/compare/1.1.5...1.1.6) (2020-04-18)
 
 
