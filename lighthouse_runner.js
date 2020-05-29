@@ -133,13 +133,13 @@ const parallelLimit = async (funcList, limit = 4) => {
 /**
  * Listener function for 'queueadd' event from simplecrawler.
  *
- * @param {*} queueItem a URL that has been picked up by the crawler
+ * @param {{uriPath: string}} queueItem a URL that has been picked up by the crawler
  */
 /* istanbul ignore next */
 const queueAdd = (queueItem, urlList) => {
-    let fileExtension = queueItem.uriPath.split('/');
-    const regex = /\.(css|jpg|jpeg|pdf|docx|js|png|ico|gif|svg|psd|ai|zip|gz|zx|src|cassette|mini-profiler|axd|woff|woff2|eot|ttf)/i;
-    if (!fileExtension[fileExtension.length - 1].match(regex)) {
+    let [fileExtension] = queueItem.uriPath.split('/').slice(-1);
+    const regex = /\.(css|jpe?g|pdf|docx?|m?js|png|ico|gif|svgz?|psd|ai|zip|gz|zx|src|cassette|mini-profiler|axd|woff2?|eot|ttf|web[pm]|mp[43]|ogg|txt|webmanifest|json|manifest)$/i;
+    if (!fileExtension.match(regex)) {
         urlList.push(queueItem.url);
         console.log("Pushed: ", queueItem.url);
     }
