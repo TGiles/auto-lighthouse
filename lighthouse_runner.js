@@ -163,6 +163,12 @@ const queueAdd = (queueItem, urlList) => {
 };
 
 /* istanbul ignore next */
+/**
+ *
+ *
+ * @param {String []} urlList List of valid urls from simplecrawler
+ * @param {boolean} autoOpen
+ */
 const complete = (urlList, autoOpen) => {
     /* 
     ? https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
