@@ -6,9 +6,11 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 const open = require('open');
+const os = require('os');
 let autoOpen = false;
 let port;
 let outputMode;
+let threads;
 const simpleCrawlerConfig = require('./config/simpleCrawler');
 const runnerConfig = require('./config/runnerConfiguration');
 
@@ -185,7 +187,7 @@ const complete = (urlList, autoOpen) => {
                 [
                     processReports(urlList, combinedOpts, tempFilePath)
                 ],
-                2);
+                threads);
             await Promise.all(promises);
             console.log('Done with reports!');
         } catch (e) {
@@ -244,6 +246,11 @@ function main(program) {
     let domainRoot;
     let simpleCrawler;
     outputMode = program.format;
+    if (program.threads === undefined) {
+        threads = os.cpus().length;
+    } else {
+        threads = programs.threads;
+    }
     if (program.express === undefined) {
         autoOpen = runnerConfig.autoOpenReports;
     } else {
