@@ -1,3 +1,9 @@
+* feat: add default help, thread option, fix blacklist regex (#113) (f0341c3)
+* fix: add more extentions to the blacklist like audio and video files (#111) (e79a25c)
+* build(deps): bump lighthouse from 5.6.0 to 6.0.0 (#110) (f9e7de0)
+* build(deps): bump open from 7.0.3 to 7.0.4 (#108) (92ded81)
+* build(deps-dev): bump release-it from 13.5.8 to 13.6.1 (#109) (1cd72b3)
+
 ## [1.1.7](https://github.com/TGiles/auto-lighthouse/compare/1.1.6...1.1.7) (2020-05-12)
 
 ## [1.1.6](https://github.com/TGiles/auto-lighthouse/compare/1.1.5...1.1.6) (2020-04-18)
