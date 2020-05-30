@@ -201,6 +201,7 @@ const complete = (urlList, autoOpen) => {
     This prevents the CPU from getting bogged down when Lighthouse tries to run
     a report on every URL in the URL list
     */
+    console.log(`Generating ${urlList.length * 2} reports!`);
     (async () => {
         try {
             let combinedOpts = [desktopOpts, opts];
