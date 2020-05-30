@@ -6,11 +6,14 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 const open = require('open');
+const os = require('os');
 let autoOpen = false;
 let port;
 let outputMode;
+let threads;
 const simpleCrawlerConfig = require('./config/simpleCrawler');
 const runnerConfig = require('./config/runnerConfiguration');
+const whiteList = require('./whitelist').whiteList;
 
 /**
  * Launches a headless instance of chrome and runs Lighthouse on that instance.
@@ -137,15 +140,35 @@ const parallelLimit = async (funcList, limit = 4) => {
  */
 /* istanbul ignore next */
 const queueAdd = (queueItem, urlList) => {
-    let [fileExtension] = queueItem.uriPath.split('/').slice(-1);
-    const regex = /\.(css|jpe?g|pdf|docx?|m?js|png|ico|gif|svgz?|psd|ai|zip|gz|zx|src|cassette|mini-profiler|axd|woff2?|eot|ttf|web[pm]|mp[43]|ogg|txt|webmanifest|json|manifest)$/i;
-    if (!fileExtension.match(regex)) {
+    const [endOfURLPath] = queueItem.uriPath.split('/').slice(-1);
+    const [fileExtension] = endOfURLPath.split('.').slice(-1);
+    const isValidWebPage = whiteList.includes(fileExtension);
+
+    if (isValidWebPage) {
         urlList.push(queueItem.url);
-        console.log("Pushed: ", queueItem.url);
+        console.log(`Pushed: ${queueItem.url}`);
+
+    // if end of the path is /xyz/, this is still a valid path
+    } if (endOfURLPath.length === 0) {
+        urlList.push(queueItem.url);
+        console.log(`Pushed: ${queueItem.url}`);
+    }
+    else {
+        // if uri path is clean/no file path
+        if (!endOfURLPath.includes('.')) {
+        urlList.push(queueItem.url);
+            console.log(`Pushed: ${queueItem.url}`);
+        }
     }
 };
 
 /* istanbul ignore next */
+/**
+ *
+ *
+ * @param {String []} urlList List of valid urls from simplecrawler
+ * @param {boolean} autoOpen
+ */
 const complete = (urlList, autoOpen) => {
     /* 
     ? https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
@@ -178,6 +201,7 @@ const complete = (urlList, autoOpen) => {
     This prevents the CPU from getting bogged down when Lighthouse tries to run
     a report on every URL in the URL list
     */
+    console.log(`Generating ${urlList.length * 2} reports!`);
     (async () => {
         try {
             let combinedOpts = [desktopOpts, opts];
@@ -185,7 +209,7 @@ const complete = (urlList, autoOpen) => {
                 [
                     processReports(urlList, combinedOpts, tempFilePath)
                 ],
-                2);
+                threads);
             await Promise.all(promises);
             console.log('Done with reports!');
         } catch (e) {
@@ -244,6 +268,11 @@ function main(program) {
     let domainRoot;
     let simpleCrawler;
     outputMode = program.format;
+    if (program.threads === undefined) {
+        threads = os.cpus().length;
+    } else {
+        threads = programs.threads;
+    }
     if (program.express === undefined) {
         autoOpen = runnerConfig.autoOpenReports;
     } else {
@@ -301,8 +330,6 @@ function main(program) {
     } else {
         urlList.push(domainRoot.href);
     }
-
-    // simpleCrawler.host = domainRoot.hostname;
 
     if (autoOpen) {
         console.log('Automatically opening reports when done!');
