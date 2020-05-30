@@ -309,8 +309,6 @@ function main(program) {
         urlList.push(domainRoot.href);
     }
 
-    // simpleCrawler.host = domainRoot.hostname;
-
     if (autoOpen) {
         console.log('Automatically opening reports when done!');
     } else {
