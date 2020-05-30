@@ -13,6 +13,7 @@ let outputMode;
 let threads;
 const simpleCrawlerConfig = require('./config/simpleCrawler');
 const runnerConfig = require('./config/runnerConfiguration');
+const whiteList = require('./whitelist').whiteList;
 
 /**
  * Launches a headless instance of chrome and runs Lighthouse on that instance.
@@ -139,11 +140,25 @@ const parallelLimit = async (funcList, limit = 4) => {
  */
 /* istanbul ignore next */
 const queueAdd = (queueItem, urlList) => {
-    let [fileExtension] = queueItem.uriPath.split('/').slice(-1);
-    const regex = /\.(css|jpe?g|pdf|docx?|m?js|png|ico|gif|svgz?|psd|ai|zip|gz|zx|src|cassette|mini-profiler|axd|woff2?|eot|ttf|web[pm]|mp[43]|ogg|txt|webmanifest|json|manifest)$/i;
-    if (!fileExtension.match(regex)) {
+    const [endOfURLPath] = queueItem.uriPath.split('/').slice(-1);
+    const [fileExtension] = endOfURLPath.split('.').slice(-1);
+    const isValidWebPage = whiteList.includes(fileExtension);
+
+    if (isValidWebPage) {
         urlList.push(queueItem.url);
-        console.log("Pushed: ", queueItem.url);
+        console.log(`Pushed: ${queueItem.url}`);
+
+    // if end of the path is /xyz/, this is still a valid path
+    } if (endOfURLPath.length === 0) {
+        urlList.push(queueItem.url);
+        console.log(`Pushed: ${queueItem.url}`);
+    }
+    else {
+        // if uri path is clean/no file path
+        if (!endOfURLPath.includes('.')) {
+        urlList.push(queueItem.url);
+            console.log(`Pushed: ${queueItem.url}`);
+        }
     }
 };
 
