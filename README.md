@@ -18,7 +18,7 @@ A CLI for crawling one or more domains and generating both mobile and desktop re
 
  * `auto-lighthouse -h`
     * Verify that you recieve the help output
-* `auto-lighthouse -u some_url -o true`
+* `auto-lighthouse -u some_url -e true`
 
 ## How to use when contributing back to repository
 * Clone the repository
