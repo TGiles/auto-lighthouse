@@ -1,3 +1,8 @@
+* docs: update README (e876ce2)
+* build(deps-dev): bump release-it from 13.6.1 to 13.6.2 (#116) (4b83c66)
+* build(deps-dev): bump nyc from 15.0.1 to 15.1.0 (#114) (e273a62)
+* fix: update README.md (#115) (937069f)
+
 * feat: add default help, thread option, fix blacklist regex (#113) (f0341c3)
 * fix: add more extentions to the blacklist like audio and video files (#111) (e79a25c)
 * build(deps): bump lighthouse from 5.6.0 to 6.0.0 (#110) (f9e7de0)
