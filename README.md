@@ -14,30 +14,24 @@
 A CLI for crawling one or more domains and generating both mobile and desktop reports for each page.
 
 ## How to use consume via NPM
-* `npm install auto-lighthouse` or `npm install -g auto-lighthouse`
+* `npx auto-lighthouse`
+    * This command should print the help output
 
- * `auto-lighthouse -h`
+* `npm install auto-lighthouse` or `npm install -g auto-lighthouse`
+ * `auto-lighthouse`
     * Verify that you recieve the help output
 * `auto-lighthouse -u some_url -e true`
 
 ## How to use when contributing back to repository
-* Clone the repository
+* Fork the repository
 * Navigate to the project root
 * `npm install`
 * `npm link`
-* `auto-lighthouse -h`
+* `auto-lighthouse`
     * Verify help output
 * Make some changes
 * Make a pull request
 * `npm unlink auto-lighthouse`
-
-## Alternate way to use via cloning the repository
-* Please modify the `host` field in `config/simpleCrawler.json` with your chosen domain to perform audits on that domain.
-* `npm install`
-* `npm run start`
-* Navigate to the `lighthouse` folder
-* Open the appropriate timestamped directory
-* View lighthouse reports for mobile and desktop agents in your browser
 
 ## Configuration reference
  `runnerConfiguration.json` is the configuration file we use to control some of the internals of this package.
