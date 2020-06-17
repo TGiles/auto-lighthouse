@@ -1,3 +1,6 @@
+* build(deps-dev): bump release-it from 13.6.2 to 13.6.3 (#118) (501e078)
+* build(deps): bump chrome-launcher from 0.13.2 to 0.13.3 (#117) (292ed24)
+
 * docs: update README (e876ce2)
 * build(deps-dev): bump release-it from 13.6.1 to 13.6.2 (#116) (4b83c66)
 * build(deps-dev): bump nyc from 15.0.1 to 15.1.0 (#114) (e273a62)
