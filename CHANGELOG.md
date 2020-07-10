@@ -1,3 +1,11 @@
+* build(deps-dev): bump release-it from 13.6.4 to 13.6.5 (#125) (3714160)
+* build(deps): bump lighthouse from 6.1.0 to 6.1.1 (#124) (4520fbb)
+* build(deps): bump chrome-launcher from 0.13.3 to 0.13.4 (#123) (8d4a1e9)
+* build(deps-dev): bump release-it from 13.6.3 to 13.6.4 (#122) (ddc97f5)
+* build(deps): bump lighthouse from 6.0.0 to 6.1.0 (#121) (67b8ab3)
+* build(deps-dev): bump @commitlint/cli from 8.3.5 to 9.0.1 (#119) (2194708)
+* build(deps-dev): bump @commitlint/config-conventional (#120) (67d59a7)
+
 * build(deps-dev): bump release-it from 13.6.2 to 13.6.3 (#118) (501e078)
 * build(deps): bump chrome-launcher from 0.13.2 to 0.13.3 (#117) (292ed24)
 
