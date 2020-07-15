@@ -271,7 +271,7 @@ function main(program) {
     if (program.threads === undefined) {
         threads = os.cpus().length;
     } else {
-        threads = programs.threads;
+        threads = program.threads;
     }
     if (program.express === undefined) {
         autoOpen = runnerConfig.autoOpenReports;
