@@ -284,9 +284,15 @@ function main(program) {
         if (Array.isArray(program.url)) {
             domainRoot = [];
             program.url.forEach(_url => {
+                if (!_url.startsWith('https://') && !program.url.startsWith('http://')) {
+                    _url = 'https://' + _url;
+                }
                 domainRoot.push(new URL(_url));
             });
         } else {
+            if (!program.url.startsWith('https://') && !program.url.startsWith('http://')) {
+                program.url = 'https://' + program.url;
+            }
             domainRoot = new URL(program.url);
         }
     }
