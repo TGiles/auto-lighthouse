@@ -44,7 +44,8 @@ describe("main", () => {
     let mockProgram = {
       express: true,
       url: 'https://tgiles.github.io',
-      port: 8000
+      port: 8000,
+      threads: 2
     };
     spyOn(runner, "main").and.callThrough();
 
