@@ -66,7 +66,7 @@ describe("main", () => {
   it('should not throw an error when the URL is an array of one', () => {
     let runner = require('../../lighthouse_runner');
     let mockProgram = {
-      url: ['https://tgiles.github.io'],
+      url: ['http://tgiles.github.io'],
       port: 8001
     }
     spyOn(runner, "main").and.callThrough();
@@ -78,7 +78,7 @@ describe("main", () => {
   it('should not throw an error when the URL is an array of two or more', () => {
     let runner = require('../../lighthouse_runner');
     let mockProgram = {
-      url: ['https://tgiles.github.io', 'https://blankslate.io'],
+      url: ['tgiles.github.io', 'https://blankslate.io'],
       port: 8001
     }
     spyOn(runner, "main").and.callThrough();
