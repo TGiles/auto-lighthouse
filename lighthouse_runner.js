@@ -148,7 +148,7 @@ const queueAdd = (queueItem, urlList) => {
         urlList.push(queueItem.url);
         console.log(`Pushed: ${queueItem.url}`);
 
-    // if end of the path is /xyz/, this is still a valid path
+        // if end of the path is /xyz/, this is still a valid path
     } if (endOfURLPath.length === 0) {
         urlList.push(queueItem.url);
         console.log(`Pushed: ${queueItem.url}`);
@@ -156,7 +156,7 @@ const queueAdd = (queueItem, urlList) => {
     else {
         // if uri path is clean/no file path
         if (!endOfURLPath.includes('.')) {
-        urlList.push(queueItem.url);
+            urlList.push(queueItem.url);
             console.log(`Pushed: ${queueItem.url}`);
         }
     }
@@ -212,6 +212,9 @@ const complete = (urlList, autoOpen) => {
                 threads);
             await Promise.all(promises);
             console.log('Done with reports!');
+            if (outputMode === 'csv') {
+                aggregateCSVReports(tempFilePath);
+            }
         } catch (e) {
             console.error(e);
         }
@@ -221,6 +224,44 @@ const complete = (urlList, autoOpen) => {
     })();
 
 };
+
+/**
+ *
+ *
+ * @param {string} directoryPath
+ * @returns
+ */
+const aggregateCSVReports = (directoryPath) => {
+    const parsedDirectoryPath = path.parse(directoryPath);
+    const timestamp = parsedDirectoryPath.base;
+
+    const aggregateReportName = timestamp + '_aggregateReport.csv';
+    let aggregatePath = path.join(directoryPath, aggregateReportName);
+    let writeStream = fs.createWriteStream(aggregatePath, { flags: 'a' });
+    let counter = 0;
+    try {
+        fs.readdirSync(directoryPath).map(fileName => {
+            if (fileName !== aggregateReportName) {
+                let filePath = path.join(directoryPath, fileName);
+                let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
+                if (counter === 0) {
+                    writeStream.write(fileContents + '\n');
+                    counter++;
+                } else {
+                    let newContents = fileContents.split('\n').slice(1).join('\n');
+                    writeStream.write(newContents + '\n');
+                }
+
+            }
+        });
+    }
+    catch (e) {
+        console.error(e);
+        return false;
+    }
+    return true;
+}
+
 
 /**
  *  Opens generated reports in your preferred browser as an explorable list
@@ -350,5 +391,6 @@ function main(program) {
 module.exports = {
     main,
     openReports,
-    openReportsWithoutServer
+    openReportsWithoutServer,
+    aggregateCSVReports
 };
