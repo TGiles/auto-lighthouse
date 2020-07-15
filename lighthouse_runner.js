@@ -315,6 +315,7 @@ function main(program) {
         simpleCrawler[key] = simpleCrawlerConfig[key];
     }
     simpleCrawler.ignoreWWWDomain = true;
+    simpleCrawler.respectRobotsTxt = program.respect;
     let urlList = [];
     if (isDomainRootAnArray) {
         if (domainRoot.length > 1) {
