@@ -284,7 +284,7 @@ function main(program) {
         if (Array.isArray(program.url)) {
             domainRoot = [];
             program.url.forEach(_url => {
-                if (!_url.startsWith('https://') && !program.url.startsWith('http://')) {
+                if (!_url.startsWith('https://') && !_url.startsWith('http://')) {
                     _url = 'https://' + _url;
                 }
                 domainRoot.push(new URL(_url));
