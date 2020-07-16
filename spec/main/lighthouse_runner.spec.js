@@ -88,6 +88,7 @@ describe("main", () => {
     expect(result).toBeTruthy();
   });
 });
+
 describe("openReportsWithoutServer", () => {
   let runner = null;
   beforeEach(() => {
@@ -195,4 +196,22 @@ describe("openReports", () => {
     spyOn(runner, "openReports").and.callThrough();
     expect(() => { runner.openReports(port);}).toThrowError();
   });
+});
+
+describe('aggregateCSVReports', () => {
+  it('should create an aggregate report', () => {
+    let testPath = path.join(__dirname, "../../", 'spec', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM');
+    try {
+      let testAggregatePath = path.join(__dirname, "../../", 'spec', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_aggregateReport.csv');
+      fs.unlinkSync(testAggregatePath);
+    } catch (e) {
+      console.log(e);
+      console.log('Aggregate report was already deleted!');
+    }
+    let runner = require('../../lighthouse_runner');
+    spyOn(runner, 'aggregateCSVReports').and.callThrough();
+    let result = runner.aggregateCSVReports(testPath);
+    expect(result).toBeTrue();
+    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath);
+  })
 });
