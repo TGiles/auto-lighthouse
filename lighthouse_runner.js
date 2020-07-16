@@ -13,7 +13,7 @@ let outputMode;
 let threads;
 const simpleCrawlerConfig = require('./config/simpleCrawler');
 const runnerConfig = require('./config/runnerConfiguration');
-const whiteList = require('./whitelist').whiteList;
+const allowedList = require('./allowedList').allowedList;
 
 /**
  * Launches a headless instance of chrome and runs Lighthouse on that instance.
@@ -142,7 +142,7 @@ const parallelLimit = async (funcList, limit = 4) => {
 const queueAdd = (queueItem, urlList) => {
     const [endOfURLPath] = queueItem.uriPath.split('/').slice(-1);
     const [fileExtension] = endOfURLPath.split('.').slice(-1);
-    const isValidWebPage = whiteList.includes(fileExtension);
+    const isValidWebPage = allowedList.includes(fileExtension);
 
     if (isValidWebPage) {
         urlList.push(queueItem.url);
