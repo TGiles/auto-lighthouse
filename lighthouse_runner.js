@@ -235,21 +235,35 @@ const aggregateCSVReports = (directoryPath) => {
     const parsedDirectoryPath = path.parse(directoryPath);
     const timestamp = parsedDirectoryPath.base;
 
-    const aggregateReportName = timestamp + '_aggregateReport.csv';
-    let aggregatePath = path.join(directoryPath, aggregateReportName);
-    let writeStream = fs.createWriteStream(aggregatePath, { flags: 'a' });
-    let counter = 0;
+    const desktopAggregateReportName = timestamp + '_desktop_aggregateReport.csv';
+    const mobileAggregateReportName = timestamp + '_mobile_aggregateReport.csv';
+    let desktopAggregatePath = path.join(directoryPath, desktopAggregateReportName);
+    let mobileAggregatePath = path.join(directoryPath, mobileAggregateReportName);
+    let desktopWriteStream = fs.createWriteStream(desktopAggregatePath, { flags: 'a' });
+    let mobileWriteStream = fs.createWriteStream(mobileAggregatePath, { flags: 'a' });
+    let desktopCounter = 0;
+    let mobileCounter = 0;
     try {
         fs.readdirSync(directoryPath).map(fileName => {
-            if (fileName !== aggregateReportName) {
+            if (fileName !== desktopAggregateReportName && fileName !== mobileAggregateReportName) {
                 let filePath = path.join(directoryPath, fileName);
                 let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
-                if (counter === 0) {
-                    writeStream.write(fileContents + '\n');
-                    counter++;
-                } else {
-                    let newContents = fileContents.split('\n').slice(1).join('\n');
-                    writeStream.write(newContents + '\n');
+                if (fileName.includes('.desktop')) {
+                    if (desktopCounter === 0) {
+                        desktopWriteStream.write(fileContents + '\n');
+                        desktopCounter++;
+                    } else {
+                        let newContents = fileContents.split('\n').slice(1).join('\n');
+                        desktopWriteStream.write(newContents + '\n');
+                    }
+                } else if (fileName.includes('.mobile')) {
+                    if (mobileCounter === 0) {
+                        mobileWriteStream.write(fileContents + '\n');
+                        mobileCounter++;
+                    } else {
+                        let newContents = fileContents.split('\n').slice(1).join('\n');
+                        mobileWriteStream.write(newContents + '\n');
+                    }
                 }
 
             }
