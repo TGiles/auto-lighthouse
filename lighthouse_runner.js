@@ -234,6 +234,13 @@ const complete = (urlList, autoOpen) => {
 const aggregateCSVReports = (directoryPath) => {
     const parsedDirectoryPath = path.parse(directoryPath);
     const timestamp = parsedDirectoryPath.base;
+    let files;
+    try {
+        files = fs.readdirSync(directoryPath);
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
 
     const desktopAggregateReportName = timestamp + '_desktop_aggregateReport.csv';
     const mobileAggregateReportName = timestamp + '_mobile_aggregateReport.csv';
@@ -244,7 +251,7 @@ const aggregateCSVReports = (directoryPath) => {
     let desktopCounter = 0;
     let mobileCounter = 0;
     try {
-        fs.readdirSync(directoryPath).map(fileName => {
+        files.forEach(fileName => {
             if (fileName !== desktopAggregateReportName && fileName !== mobileAggregateReportName) {
                 let filePath = path.join(directoryPath, fileName);
                 let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
@@ -265,7 +272,6 @@ const aggregateCSVReports = (directoryPath) => {
                         mobileWriteStream.write(newContents + '\n');
                     }
                 }
-
             }
         });
     }
