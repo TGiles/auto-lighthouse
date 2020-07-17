@@ -1,3 +1,8 @@
+* feat: add aggregation for csv (#130) (fd1e0fe)
+* build(deps): [security] bump lodash from 4.17.15 to 4.17.19 (#129) (e451700)
+* build(deps-dev): bump @commitlint/config-conventional (#126) (d56f493)
+* build(deps-dev): bump @commitlint/cli from 9.0.1 to 9.1.1 (#127) (8029b31)
+
 * build(deps-dev): bump release-it from 13.6.4 to 13.6.5 (#125) (3714160)
 * build(deps): bump lighthouse from 6.1.0 to 6.1.1 (#124) (4520fbb)
 * build(deps): bump chrome-launcher from 0.13.3 to 0.13.4 (#123) (8d4a1e9)
