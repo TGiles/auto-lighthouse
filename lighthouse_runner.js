@@ -7,6 +7,9 @@ const path = require('path');
 const { URL } = require('url');
 const open = require('open');
 const os = require('os');
+const csvStringify = require('csv-stringify/lib/sync');
+const reportToRow = require('./reportToRow');
+
 let autoOpen = false;
 let port;
 let outputMode;
@@ -281,7 +284,6 @@ const aggregateCSVReports = (directoryPath) => {
     }
     return true;
 }
-
 
 /**
  *  Opens generated reports in your preferred browser as an explorable list

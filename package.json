@@ -36,6 +36,7 @@
   "dependencies": {
     "chrome-launcher": "^0.13.0",
     "commander": "^5.0.0",
+    "csv": "^5.3.2",
     "express": "^4.17.1",
     "lighthouse": "^6.0.0",
     "open": "7.0.4",
