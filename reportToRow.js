@@ -154,20 +154,17 @@ const reportToRowHeaders = [
 ];
 
 const reportToRow = (csvFileContents) => {
-    const oldRows = csvParse(csvFileContents, {
+    const reportRows = csvParse(csvFileContents, {
         columns: true,
         skip_empty_lines: true,
         ltrim: true
     });
     let columns = [
-    	oldRows[1].requestedUrl,
-    	oldRows[1].finalUrl
+    	reportRows[0].requestedUrl,
+    	reportRows[0].finalUrl
     ];
-// console.log('oldRows',oldRows);
-    oldRows.forEach( (oldRow,index) => { columns.push(oldRow.score) });
-// console.log('columns',columns);
+    reportRows.forEach( (reportRow,index) => { columns.push(reportRow.score) });
     const csvRow = columns;
-// console.log('csvRow', csvRow);
     return csvRow;
 }
 

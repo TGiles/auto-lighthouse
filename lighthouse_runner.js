@@ -8,7 +8,7 @@ const { URL } = require('url');
 const open = require('open');
 const os = require('os');
 const csvStringify = require('csv-stringify/lib/sync');
-const reportToRow = require('./reportToRow');
+const { reportToRow, reportToRowHeaders } = require('./reportToRow');
 
 let autoOpen = false;
 let port;
@@ -103,17 +103,28 @@ const processResults = (processObj) => {
     } else {
         filePath = path.join(tempFilePath, replacedUrl + '.mobile.report.' + opts.output);
     }
+    // // @TODO ASYNC IS BETTER BUT WE ARENT CURRENTLY AWAITING THE PROMISE PROPERLY
     // https://stackoverflow.com/questions/34811222/writefile-no-such-file-or-directory
-    fs.writeFile(filePath, report, {
+    // fs.writeFile(filePath, report, {
+    //     encoding: 'utf-8'
+    // }, (err) => {
+    //     if (err) throw err;
+    //     if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
+    //         console.log('Wrote desktop report: ', currentUrl, 'at: ', tempFilePath);
+    //     } else {
+    //         console.log('Wrote mobile report: ', currentUrl, 'at: ', tempFilePath);
+    //     }
+    // });
+
+    fs.writeFileSync(filePath, report, {
         encoding: 'utf-8'
-    }, (err) => {
-        if (err) throw err;
-        if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
-            console.log('Wrote desktop report: ', currentUrl, 'at: ', tempFilePath);
-        } else {
-            console.log('Wrote mobile report: ', currentUrl, 'at: ', tempFilePath);
-        }
     });
+    if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
+        console.log('Wrote desktop report: ', currentUrl, 'at: ', tempFilePath);
+    } else {
+        console.log('Wrote mobile report: ', currentUrl, 'at: ', tempFilePath);
+    }
+
 };
 /**
  * Helper function to queue up async promises.
@@ -251,32 +262,33 @@ const aggregateCSVReports = (directoryPath) => {
     let mobileAggregatePath = path.join(directoryPath, mobileAggregateReportName);
     let desktopWriteStream = fs.createWriteStream(desktopAggregatePath, { flags: 'a' });
     let mobileWriteStream = fs.createWriteStream(mobileAggregatePath, { flags: 'a' });
-    let desktopCounter = 0;
-    let mobileCounter = 0;
+
+    let desktopRows = [
+        reportToRowHeaders
+    ];
+    let mobileRows = [
+        reportToRowHeaders
+    ];
+
     try {
         files.forEach(fileName => {
             if (fileName !== desktopAggregateReportName && fileName !== mobileAggregateReportName) {
                 let filePath = path.join(directoryPath, fileName);
                 let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
+                console.log(`Bundling ${fileName} into aggregated report`);
+                const newRow = reportToRow(fileContents);
                 if (fileName.includes('.desktop')) {
-                    if (desktopCounter === 0) {
-                        desktopWriteStream.write(fileContents + '\n');
-                        desktopCounter++;
-                    } else {
-                        let newContents = fileContents.split('\n').slice(1).join('\n');
-                        desktopWriteStream.write(newContents + '\n');
-                    }
+                    desktopRows.push(newRow);
                 } else if (fileName.includes('.mobile')) {
-                    if (mobileCounter === 0) {
-                        mobileWriteStream.write(fileContents + '\n');
-                        mobileCounter++;
-                    } else {
-                        let newContents = fileContents.split('\n').slice(1).join('\n');
-                        mobileWriteStream.write(newContents + '\n');
-                    }
+                    mobileRows.push(newRow);
                 }
             }
         });
+        desktopWriteStream.write(csvStringify(desktopRows));
+        console.log('Wrote desktop aggregate report');
+        mobileWriteStream.write(csvStringify(mobileRows));
+        console.log('Wrote mobile aggregate report');
+
     }
     catch (e) {
         console.error(e);
