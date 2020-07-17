@@ -13,7 +13,7 @@ let outputMode;
 let threads;
 const simpleCrawlerConfig = require('./config/simpleCrawler');
 const runnerConfig = require('./config/runnerConfiguration');
-const whiteList = require('./whitelist').whiteList;
+const allowedList = require('./allowedList').allowedList;
 
 /**
  * Launches a headless instance of chrome and runs Lighthouse on that instance.
@@ -142,13 +142,13 @@ const parallelLimit = async (funcList, limit = 4) => {
 const queueAdd = (queueItem, urlList) => {
     const [endOfURLPath] = queueItem.uriPath.split('/').slice(-1);
     const [fileExtension] = endOfURLPath.split('.').slice(-1);
-    const isValidWebPage = whiteList.includes(fileExtension);
+    const isValidWebPage = allowedList.includes(fileExtension);
 
     if (isValidWebPage) {
         urlList.push(queueItem.url);
         console.log(`Pushed: ${queueItem.url}`);
 
-    // if end of the path is /xyz/, this is still a valid path
+        // if end of the path is /xyz/, this is still a valid path
     } if (endOfURLPath.length === 0) {
         urlList.push(queueItem.url);
         console.log(`Pushed: ${queueItem.url}`);
@@ -156,7 +156,7 @@ const queueAdd = (queueItem, urlList) => {
     else {
         // if uri path is clean/no file path
         if (!endOfURLPath.includes('.')) {
-        urlList.push(queueItem.url);
+            urlList.push(queueItem.url);
             console.log(`Pushed: ${queueItem.url}`);
         }
     }
@@ -212,6 +212,9 @@ const complete = (urlList, autoOpen) => {
                 threads);
             await Promise.all(promises);
             console.log('Done with reports!');
+            if (outputMode === 'csv') {
+                aggregateCSVReports(tempFilePath);
+            }
         } catch (e) {
             console.error(e);
         }
@@ -221,6 +224,64 @@ const complete = (urlList, autoOpen) => {
     })();
 
 };
+
+/**
+ *
+ *
+ * @param {string} directoryPath
+ * @returns
+ */
+const aggregateCSVReports = (directoryPath) => {
+    const parsedDirectoryPath = path.parse(directoryPath);
+    const timestamp = parsedDirectoryPath.base;
+    let files;
+    try {
+        files = fs.readdirSync(directoryPath);
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
+
+    const desktopAggregateReportName = timestamp + '_desktop_aggregateReport.csv';
+    const mobileAggregateReportName = timestamp + '_mobile_aggregateReport.csv';
+    let desktopAggregatePath = path.join(directoryPath, desktopAggregateReportName);
+    let mobileAggregatePath = path.join(directoryPath, mobileAggregateReportName);
+    let desktopWriteStream = fs.createWriteStream(desktopAggregatePath, { flags: 'a' });
+    let mobileWriteStream = fs.createWriteStream(mobileAggregatePath, { flags: 'a' });
+    let desktopCounter = 0;
+    let mobileCounter = 0;
+    try {
+        files.forEach(fileName => {
+            if (fileName !== desktopAggregateReportName && fileName !== mobileAggregateReportName) {
+                let filePath = path.join(directoryPath, fileName);
+                let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
+                if (fileName.includes('.desktop')) {
+                    if (desktopCounter === 0) {
+                        desktopWriteStream.write(fileContents + '\n');
+                        desktopCounter++;
+                    } else {
+                        let newContents = fileContents.split('\n').slice(1).join('\n');
+                        desktopWriteStream.write(newContents + '\n');
+                    }
+                } else if (fileName.includes('.mobile')) {
+                    if (mobileCounter === 0) {
+                        mobileWriteStream.write(fileContents + '\n');
+                        mobileCounter++;
+                    } else {
+                        let newContents = fileContents.split('\n').slice(1).join('\n');
+                        mobileWriteStream.write(newContents + '\n');
+                    }
+                }
+            }
+        });
+    }
+    catch (e) {
+        console.error(e);
+        return false;
+    }
+    return true;
+}
+
 
 /**
  *  Opens generated reports in your preferred browser as an explorable list
@@ -271,7 +332,7 @@ function main(program) {
     if (program.threads === undefined) {
         threads = os.cpus().length;
     } else {
-        threads = programs.threads;
+        threads = program.threads;
     }
     if (program.express === undefined) {
         autoOpen = runnerConfig.autoOpenReports;
@@ -284,9 +345,15 @@ function main(program) {
         if (Array.isArray(program.url)) {
             domainRoot = [];
             program.url.forEach(_url => {
+                if (!_url.startsWith('https://') && !_url.startsWith('http://')) {
+                    _url = 'https://' + _url;
+                }
                 domainRoot.push(new URL(_url));
             });
         } else {
+            if (!program.url.startsWith('https://') && !program.url.startsWith('http://')) {
+                program.url = 'https://' + program.url;
+            }
             domainRoot = new URL(program.url);
         }
     }
@@ -315,6 +382,7 @@ function main(program) {
         simpleCrawler[key] = simpleCrawlerConfig[key];
     }
     simpleCrawler.ignoreWWWDomain = true;
+    simpleCrawler.respectRobotsTxt = program.respect;
     let urlList = [];
     if (isDomainRootAnArray) {
         if (domainRoot.length > 1) {
@@ -343,5 +411,6 @@ function main(program) {
 module.exports = {
     main,
     openReports,
-    openReportsWithoutServer
+    openReportsWithoutServer,
+    aggregateCSVReports
 };

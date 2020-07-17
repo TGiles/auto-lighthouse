@@ -9,8 +9,9 @@ program
     .option('-u, --url <urls>', 'starting valid url(s) for auto-lighthouse')
     .option('--format <mode>', 'output format of Lighthouse reports. Allowed values: html, json, csv.', 'html')
     .option('-e, --express <open>', 'flag for auto opening reports in local express server. Allowed values: true, false.')
-    .option('-t | --threads <threads>', 'Number of threads used. Defaults to all threads.')
-    .option('-p, --port <port>', 'port for local express server', 9000);
+    .option('-t, --threads <threads>', 'Number of threads used. Defaults to all threads.')
+    .option('-p, --port <port>', 'port for local express server', 9000)
+    .option('--respectRobots <respect>', 'flag for respecting all robots.txt rules', true);
 
 program.parse(process.argv);
 if (program.rawArgs.length === 2) {

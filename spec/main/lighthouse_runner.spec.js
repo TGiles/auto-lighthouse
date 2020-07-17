@@ -44,7 +44,8 @@ describe("main", () => {
     let mockProgram = {
       express: true,
       url: 'https://tgiles.github.io',
-      port: 8000
+      port: 8000,
+      threads: 2
     };
     spyOn(runner, "main").and.callThrough();
 
@@ -65,7 +66,7 @@ describe("main", () => {
   it('should not throw an error when the URL is an array of one', () => {
     let runner = require('../../lighthouse_runner');
     let mockProgram = {
-      url: ['https://tgiles.github.io'],
+      url: ['http://tgiles.github.io'],
       port: 8001
     }
     spyOn(runner, "main").and.callThrough();
@@ -77,7 +78,7 @@ describe("main", () => {
   it('should not throw an error when the URL is an array of two or more', () => {
     let runner = require('../../lighthouse_runner');
     let mockProgram = {
-      url: ['https://tgiles.github.io', 'https://blankslate.io'],
+      url: ['tgiles.github.io', 'https://blankslate.io'],
       port: 8001
     }
     spyOn(runner, "main").and.callThrough();
@@ -87,6 +88,7 @@ describe("main", () => {
     expect(result).toBeTruthy();
   });
 });
+
 describe("openReportsWithoutServer", () => {
   let runner = null;
   beforeEach(() => {
@@ -193,5 +195,49 @@ describe("openReports", () => {
     let port = -1;
     spyOn(runner, "openReports").and.callThrough();
     expect(() => { runner.openReports(port);}).toThrowError();
+  });
+});
+
+describe('aggregateCSVReports', () => {
+  it('should create two aggregate reports', () => {
+    let testPath = path.join(__dirname, "../../", 'spec', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM');
+    let testDesktopAggregatePath = path.join(__dirname, "../../", 'spec', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_desktop_aggregateReport.csv');
+    let testMobileAggregatePath = path.join(__dirname, "../../", 'spec', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_mobile_aggregateReport.csv');
+    try {
+      fs.unlinkSync(testDesktopAggregatePath);
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        console.log('Desktop aggregate report was already deleted!');
+      } else {
+        console.error(e);
+      }
+    }
+    try {
+      fs.unlinkSync(testMobileAggregatePath);
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        console.log('Mobile aggregate report was already deleted!');
+      } else {
+        console.error(e);
+      }
+    }
+    let runner = require('../../lighthouse_runner');
+    spyOn(runner, 'aggregateCSVReports').and.callThrough();
+    let result = runner.aggregateCSVReports(testPath);
+    expect(result).toBeTrue();
+    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath);
+    let desktopReportExists = fs.existsSync(testDesktopAggregatePath);
+    expect(desktopReportExists).toBeTrue();
+    let mobileReportExists = fs.existsSync(testMobileAggregatePath);
+    expect(mobileReportExists).toBeTrue();
+  });
+
+  it('should return false if directory parameter does not exist',  () => {
+    const fakePath = 'testFakePath';
+    let runner = require('../../lighthouse_runner');
+    spyOn(runner, 'aggregateCSVReports').and.callThrough();
+    let result = runner.aggregateCSVReports(fakePath);
+    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(fakePath);
+    expect(result).toBeFalse();
   });
 });

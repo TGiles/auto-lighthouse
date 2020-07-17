@@ -1,4 +1,4 @@
-const whiteList = [
+const allowedList = [
     'html',
     'htm',
     'aspx',
@@ -20,5 +20,5 @@ const whiteList = [
 ]
 
 module.exports = {
-    whiteList
+    allowedList
 }
