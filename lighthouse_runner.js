@@ -1,7 +1,7 @@
 const Crawler = require('simplecrawler');
 const lighthouse = require('lighthouse');
 const generateReport = require('lighthouse/lighthouse-core/report/report-generator');
-const chromeLauncher = require('chrome-launcher');
+const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
@@ -24,18 +24,25 @@ const allowedList = require('./allowedList').allowedList;
  * @returns Lighthouse Result object (LHR)
  */
 /* istanbul ignore next */
+
 async function launchChromeAndRunLighthouseAsync(url, opts, config = null) {
-    try {
-        const chrome = await chromeLauncher.launch({
-            chromeFlags: opts.chromeFlags
+    let port = Math.floor((Math.random() * 2000) + 10000);
+    const browser = await puppeteer.launch({
+        args: [`--remote-debugging-port=${port}`],
+        devtools: true,
+        slowMo: 500
         });
-        opts.port = chrome.port;
+    try {
+        opts.port = port;
+        opts.disableStorageReset = true;
         const results = await lighthouse(url, opts, config);
-        await chrome.kill();
-        return results.lhr;
+        await browser.close();
+        return await results.lhr;
 
     } catch (e) {
         console.error(e);
+    } finally {
+        await browser.close();
     }
 };
 
