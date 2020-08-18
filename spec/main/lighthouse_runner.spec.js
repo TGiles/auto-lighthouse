@@ -1,6 +1,50 @@
 const EventEmitter = require('events');
 const path = require('path');
 const fs = require('fs');
+
+
+describe('aggregateCSVReports', () => {
+  it('should return false if directory parameter does not exist', () => {
+    const fakePath = 'testFakePath';
+    let runner = require('../../lighthouse_runner');
+    spyOn(runner, 'aggregateCSVReports').and.callThrough();
+    let result = runner.aggregateCSVReports(fakePath);
+    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(fakePath);
+    expect(result).toBeFalse();
+  });
+  it('should create two aggregate reports', () => {
+    let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM');
+    let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_desktop_aggregateReport.csv');
+    let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_mobile_aggregateReport.csv');
+    try {
+      fs.unlinkSync(testDesktopAggregatePath);
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        console.log('Desktop aggregate report was already deleted!');
+      } else {
+        console.error(e);
+      }
+    }
+    try {
+      fs.unlinkSync(testMobileAggregatePath);
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        console.log('Mobile aggregate report was already deleted!');
+      } else {
+        console.error(e);
+      }
+    }
+    let runner = require('../../lighthouse_runner');
+    spyOn(runner, 'aggregateCSVReports').and.callThrough();
+    let result = runner.aggregateCSVReports(testPath);
+    expect(result).toBeTrue();
+    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath);
+    let desktopReportExists = fs.existsSync(testDesktopAggregatePath);
+    expect(desktopReportExists).toBeTrue();
+    let mobileReportExists = fs.existsSync(testMobileAggregatePath);
+    expect(mobileReportExists).toBeTrue();
+  });
+});
 describe("main", () => {
   it('was called once', () => {
     let lighthouse_runner = require("../../lighthouse_runner");
@@ -195,49 +239,5 @@ describe("openReports", () => {
     let port = -1;
     spyOn(runner, "openReports").and.callThrough();
     expect(() => { runner.openReports(port); }).toThrowError();
-  });
-});
-
-describe('aggregateCSVReports', () => {
-  it('should return false if directory parameter does not exist', () => {
-    const fakePath = 'testFakePath';
-    let runner = require('../../lighthouse_runner');
-    spyOn(runner, 'aggregateCSVReports').and.callThrough();
-    let result = runner.aggregateCSVReports(fakePath);
-    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(fakePath);
-    expect(result).toBeFalse();
-  });
-  it('should create two aggregate reports', () => {
-    let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM');
-    let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_desktop_aggregateReport.csv');
-    let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_mobile_aggregateReport.csv');
-    try {
-      fs.unlinkSync(testDesktopAggregatePath);
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        console.log('Desktop aggregate report was already deleted!');
-      } else {
-        console.error(e);
-      }
-    }
-    try {
-      fs.unlinkSync(testMobileAggregatePath);
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        console.log('Mobile aggregate report was already deleted!');
-      } else {
-        console.error(e);
-      }
-    }
-    let runner = require('../../lighthouse_runner');
-    spyOn(runner, 'aggregateCSVReports').and.callThrough();
-    let result = runner.aggregateCSVReports(testPath);
-    console.log("");
-    expect(result).toBeTrue();
-    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath);
-    let desktopReportExists = fs.existsSync(testDesktopAggregatePath);
-    expect(desktopReportExists).toBeTrue();
-    let mobileReportExists = fs.existsSync(testMobileAggregatePath);
-    expect(mobileReportExists).toBeTrue();
   });
 });
