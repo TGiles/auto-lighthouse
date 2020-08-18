@@ -232,6 +232,7 @@ describe('aggregateCSVReports', () => {
     let runner = require('../../lighthouse_runner');
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
     let result = runner.aggregateCSVReports(testPath);
+    console.log("");
     expect(result).toBeTrue();
     expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath);
     let desktopReportExists = fs.existsSync(testDesktopAggregatePath);
