@@ -22,7 +22,7 @@ describe("main", () => {
     let result = runner.main(crawler);
     expect(runner.main).toHaveBeenCalled();
     expect(result).toBeTruthy();
-    expect(() => { runner.main();}).toThrow(error);
+    expect(() => { runner.main(); }).toThrow(error);
   });
   it('should run without errors and not open reports', () => {
     let runner = require('../../lighthouse_runner');
@@ -61,7 +61,7 @@ describe("main", () => {
       url: undefined,
       port: 9000
     };
-    expect(() => { runner.main(mockProgram);}).toThrowError(errorMessage);
+    expect(() => { runner.main(mockProgram); }).toThrowError(errorMessage);
   });
   it('should not throw an error when the URL is an array of one', () => {
     let runner = require('../../lighthouse_runner');
@@ -194,7 +194,7 @@ describe("openReports", () => {
     let runner = require('../../lighthouse_runner');
     let port = -1;
     spyOn(runner, "openReports").and.callThrough();
-    expect(() => { runner.openReports(port);}).toThrowError();
+    expect(() => { runner.openReports(port); }).toThrowError();
   });
 });
 
@@ -232,7 +232,7 @@ describe('aggregateCSVReports', () => {
     expect(mobileReportExists).toBeTrue();
   });
 
-  it('should return false if directory parameter does not exist',  () => {
+  it('should return false if directory parameter does not exist', () => {
     const fakePath = 'testFakePath';
     let runner = require('../../lighthouse_runner');
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
