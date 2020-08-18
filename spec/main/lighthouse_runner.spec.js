@@ -22,7 +22,7 @@ describe("main", () => {
     let result = runner.main(crawler);
     expect(runner.main).toHaveBeenCalled();
     expect(result).toBeTruthy();
-    expect(() => { runner.main();}).toThrow(error);
+    expect(() => { runner.main(); }).toThrow(error);
   });
   it('should run without errors and not open reports', () => {
     let runner = require('../../lighthouse_runner');
@@ -61,7 +61,7 @@ describe("main", () => {
       url: undefined,
       port: 9000
     };
-    expect(() => { runner.main(mockProgram);}).toThrowError(errorMessage);
+    expect(() => { runner.main(mockProgram); }).toThrowError(errorMessage);
   });
   it('should not throw an error when the URL is an array of one', () => {
     let runner = require('../../lighthouse_runner');
@@ -194,15 +194,23 @@ describe("openReports", () => {
     let runner = require('../../lighthouse_runner');
     let port = -1;
     spyOn(runner, "openReports").and.callThrough();
-    expect(() => { runner.openReports(port);}).toThrowError();
+    expect(() => { runner.openReports(port); }).toThrowError();
   });
 });
 
 describe('aggregateCSVReports', () => {
+  it('should return false if directory parameter does not exist', () => {
+    const fakePath = 'testFakePath';
+    let runner = require('../../lighthouse_runner');
+    spyOn(runner, 'aggregateCSVReports').and.callThrough();
+    let result = runner.aggregateCSVReports(fakePath);
+    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(fakePath);
+    expect(result).toBeFalse();
+  });
   it('should create two aggregate reports', () => {
-    let testPath = path.join(__dirname, "../../", 'spec', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM');
-    let testDesktopAggregatePath = path.join(__dirname, "../../", 'spec', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_desktop_aggregateReport.csv');
-    let testMobileAggregatePath = path.join(__dirname, "../../", 'spec', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_mobile_aggregateReport.csv');
+    let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM');
+    let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_desktop_aggregateReport.csv');
+    let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_mobile_aggregateReport.csv');
     try {
       fs.unlinkSync(testDesktopAggregatePath);
     } catch (e) {
@@ -224,20 +232,12 @@ describe('aggregateCSVReports', () => {
     let runner = require('../../lighthouse_runner');
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
     let result = runner.aggregateCSVReports(testPath);
+    console.log("");
     expect(result).toBeTrue();
     expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath);
     let desktopReportExists = fs.existsSync(testDesktopAggregatePath);
     expect(desktopReportExists).toBeTrue();
     let mobileReportExists = fs.existsSync(testMobileAggregatePath);
     expect(mobileReportExists).toBeTrue();
-  });
-
-  it('should return false if directory parameter does not exist',  () => {
-    const fakePath = 'testFakePath';
-    let runner = require('../../lighthouse_runner');
-    spyOn(runner, 'aggregateCSVReports').and.callThrough();
-    let result = runner.aggregateCSVReports(fakePath);
-    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(fakePath);
-    expect(result).toBeFalse();
   });
 });
