@@ -274,6 +274,8 @@ const aggregateCSVReports = (directoryPath) => {
                 }
             }
         });
+        desktopWriteStream.close();
+        mobileWriteStream.close();
     }
     catch (e) {
         console.error(e);
