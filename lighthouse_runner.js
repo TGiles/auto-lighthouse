@@ -246,8 +246,8 @@ const aggregateCSVReports = (directoryPath) => {
     const mobileAggregateReportName = timestamp + '_mobile_aggregateReport.csv';
     let desktopAggregatePath = path.join(directoryPath, desktopAggregateReportName);
     let mobileAggregatePath = path.join(directoryPath, mobileAggregateReportName);
-    let desktopWriteStream = fs.createWriteStream(desktopAggregatePath, { flags: 'a' });
-    let mobileWriteStream = fs.createWriteStream(mobileAggregatePath, { flags: 'a' });
+    let desktopWriteStream = fs.createWriteStream(desktopAggregatePath, { flags: 'a', autoClose: false });
+    let mobileWriteStream = fs.createWriteStream(mobileAggregatePath, { flags: 'a', autoClose: false });
     let desktopCounter = 0;
     let mobileCounter = 0;
     try {
@@ -258,17 +258,21 @@ const aggregateCSVReports = (directoryPath) => {
                 if (fileName.includes('.desktop')) {
                     if (desktopCounter === 0) {
                         desktopWriteStream.write(fileContents + '\n');
+                        console.log("appending to desktop");
                         desktopCounter++;
                     } else {
                         let newContents = fileContents.split('\n').slice(1).join('\n');
+                        console.log("appending to desktop");
                         desktopWriteStream.write(newContents + '\n');
                     }
                 } else if (fileName.includes('.mobile')) {
                     if (mobileCounter === 0) {
                         mobileWriteStream.write(fileContents + '\n');
+                        console.log("appending to mobile");
                         mobileCounter++;
                     } else {
                         let newContents = fileContents.split('\n').slice(1).join('\n');
+                        console.log("appending to mobile");
                         mobileWriteStream.write(newContents + '\n');
                     }
                 }
