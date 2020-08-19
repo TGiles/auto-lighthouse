@@ -278,12 +278,13 @@ const aggregateCSVReports = (directoryPath) => {
                 }
             }
         });
-        desktopWriteStream.close();
-        mobileWriteStream.close();
     }
     catch (e) {
         console.error(e);
         return false;
+    } finally {
+        desktopWriteStream.close();
+        mobileWriteStream.close();
     }
     return true;
 }
