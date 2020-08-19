@@ -41,7 +41,7 @@ describe('aggregateCSVReports', () => {
     // expect(result).toBeTrue();
     expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath);
     let desktopReportExists = fs.existsSync(testDesktopAggregatePath);
-    console.log("desktop report exists", desktopReportExists);
+    console.log("desktop report exists:", desktopReportExists);
     expect(desktopReportExists).toBeTrue();
     let mobileReportExists = fs.existsSync(testMobileAggregatePath);
     expect(mobileReportExists).toBeTrue();
