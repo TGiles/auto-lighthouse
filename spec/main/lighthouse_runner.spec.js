@@ -38,7 +38,7 @@ describe('aggregateCSVReports', () => {
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
     let result = runner.aggregateCSVReports(testPath);
     console.log("result:", result);
-    // expect(result).toBeTrue();
+    expect(result).toBeTrue();
     expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath);
     let desktopReportExists = fs.existsSync(testDesktopAggregatePath);
     console.log("desktop report exists:", desktopReportExists);
