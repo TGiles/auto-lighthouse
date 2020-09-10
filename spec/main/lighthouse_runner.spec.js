@@ -4,9 +4,9 @@ const fs = require('fs');
 
 describe('aggregateCSVReports', () => {
   it('should create two aggregate reports', () => {
-    let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM');
-    let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_desktop_aggregateReport.csv');
-    let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020_6_15_05PM', '7_15_2020_6_15_05PM_mobile_aggregateReport.csv');
+    let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM');
+    let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_desktop_aggregateReport.csv');
+    let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_mobile_aggregateReport.csv');
     try {
       fs.unlinkSync(testDesktopAggregatePath);
     } catch (e) {
