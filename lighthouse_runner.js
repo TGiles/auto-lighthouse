@@ -187,7 +187,7 @@ const complete = (urlList, autoOpen) => {
     };
     let fileTime = new Date().toLocaleString();
     // Replacing characters that make OS sad
-    fileTime = fileTime.replace(/ /g, '');
+    fileTime = fileTime.replace(/ /g, '__');
     fileTime = fileTime.replace(/\//g, '_');
     fileTime = fileTime.replace(/,/g, '_');
     fileTime = fileTime.replace(/:/g, "_");
