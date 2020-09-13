@@ -4,16 +4,31 @@ const generateReport = require('lighthouse/lighthouse-core/report/report-generat
 const chromeLauncher = require('chrome-launcher');
 const fs = require('fs');
 const path = require('path');
-const { URL } = require('url');
-const open = require('open');
 const os = require('os');
 let autoOpen = false;
 let port;
 let outputMode;
 let threads;
-const simpleCrawlerConfig = require('./config/simpleCrawler');
 const runnerConfig = require('./config/runnerConfiguration');
 const allowedList = require('./allowedList').allowedList;
+const {
+    _readReportDirectory,
+    _createWriteStreams,
+    _processCSVFiles,
+    parallelLimit,
+    createFileTime,
+    _parseProgramURLs,
+    _setupCrawlerConfig,
+    _populateCrawledURLList,
+    _determineResultingFilePath,
+    _writeReportResultFile,
+    openReports,
+    openReportsWithoutServer
+} = require('./helpers');
+const {
+    _opts,
+    _desktopOpts
+} = require('./lighthouse_opts');
 
 /**
  * Launches a headless instance of chrome and runs Lighthouse on that instance.
@@ -95,42 +110,9 @@ const processResults = (processObj) => {
     let replacedUrl = splitUrl[1].replace(/\//g, "_");
     let report = generateReport.generateReport(results, opts.output);
     let filePath;
-    if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
-        filePath = path.join(tempFilePath, replacedUrl + '.desktop.report.' + opts.output);
-    } else {
-        filePath = path.join(tempFilePath, replacedUrl + '.mobile.report.' + opts.output);
-    }
+    filePath = _determineResultingFilePath(opts, filePath, tempFilePath, replacedUrl);
     // https://stackoverflow.com/questions/34811222/writefile-no-such-file-or-directory
-    fs.writeFile(filePath, report, {
-        encoding: 'utf-8'
-    }, (err) => {
-        if (err) throw err;
-        if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
-            console.log('Wrote desktop report: ', currentUrl, 'at: ', tempFilePath);
-        } else {
-            console.log('Wrote mobile report: ', currentUrl, 'at: ', tempFilePath);
-        }
-    });
-};
-/**
- * Helper function to queue up async promises.
- * Otherwise, Lighthouse is going to run a report on every URL in the URL list.
- * This will bog down the CPU.
- * @param {[function]} funcList A list of functions to be executed
- * @param {number} [limit=4] The number of parallel processes to execute the funcList
- * 
- */
-/* istanbul ignore next */
-const parallelLimit = async (funcList, limit = 4) => {
-    let inFlight = new Set();
-    return funcList.map(async (func, i) => {
-        while (inFlight.size >= limit) {
-            await Promise.race(inFlight);
-        }
-        inFlight.add(func);
-        await func;
-        inFlight.delete(func);
-    });
+    _writeReportResultFile(filePath, report, opts, currentUrl, tempFilePath);
 };
 
 /**
@@ -161,7 +143,6 @@ const queueAdd = (queueItem, urlList) => {
         }
     }
 };
-
 /* istanbul ignore next */
 /**
  *
@@ -174,23 +155,12 @@ const complete = (urlList, autoOpen) => {
     ? https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
     ? for more information on config options for lighthouse
     */
-    let opts = {
-        extends: 'lighthouse:default',
-        chromeFlags: ['--headless'],
-        output: outputMode
-    };
-    let desktopOpts = {
-        extends: 'lighthouse:default',
-        chromeFlags: ['--headless'],
-        emulatedFormFactor: 'desktop',
-        output: outputMode
-    };
-    let fileTime = new Date().toLocaleString();
-    // Replacing characters that make OS sad
-    fileTime = fileTime.replace(/ /g, '__');
-    fileTime = fileTime.replace(/\//g, '_');
-    fileTime = fileTime.replace(/,/g, '_');
-    fileTime = fileTime.replace(/:/g, "_");
+
+    let opts = _opts;
+    opts.output = outputMode;
+    let desktopOpts = _desktopOpts;
+    desktopOpts.output = outputMode;
+    const fileTime = createFileTime();
     // tempFilePath is wherever we want to store the generated report
     let tempFilePath = path.join(process.cwd(), "lighthouse", fileTime);
     if (!fs.existsSync(tempFilePath)) {
@@ -226,116 +196,40 @@ const complete = (urlList, autoOpen) => {
 };
 
 /**
- *
+ * Given a directory path to CSV reports, create two aggregate reports from the data.
+ * One aggregate report is for desktop data and the other report is for mobile data.
  *
  * @param {string} directoryPath
- * @returns
+ * @returns {boolean} didAggregateSuccessfully
  */
 const aggregateCSVReports = (directoryPath) => {
+    let didAggregateSuccessfully = true;
     const parsedDirectoryPath = path.parse(directoryPath);
     const timestamp = parsedDirectoryPath.base;
-    let files;
-    try {
-        files = fs.readdirSync(directoryPath);
-    } catch (e) {
-        console.error(e);
+    let files = _readReportDirectory(directoryPath);
+    if (!files) {
         return false;
     }
-
-    const desktopAggregateReportName = timestamp + '_desktop_aggregateReport.csv';
-    const mobileAggregateReportName = timestamp + '_mobile_aggregateReport.csv';
-    let desktopAggregatePath = path.join(directoryPath, desktopAggregateReportName);
-    let mobileAggregatePath = path.join(directoryPath, mobileAggregateReportName);
-    let desktopWriteStream = fs.createWriteStream(desktopAggregatePath, { flags: 'a', autoClose: false });
-    let mobileWriteStream = fs.createWriteStream(mobileAggregatePath, { flags: 'a', autoClose: false });
-    let desktopCounter = 0;
-    let mobileCounter = 0;
+    let [desktopWriteStream, mobileWriteStream] = _createWriteStreams(timestamp, directoryPath);
+    const aggregateName = "_aggregateReport";
+    files = files.filter(fileName => !fileName.includes(aggregateName));
     try {
-        files.forEach(fileName => {
-            if (fileName !== desktopAggregateReportName && fileName !== mobileAggregateReportName) {
-                let filePath = path.join(directoryPath, fileName);
-                let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
-                if (fileName.includes('.desktop')) {
-                    if (desktopCounter === 0) {
-                        desktopWriteStream.write(fileContents + '\n');
-                        console.log("appending to desktop");
-                        desktopCounter++;
-                    } else {
-                        let newContents = fileContents.split('\n').slice(1).join('\n');
-                        console.log("appending to desktop");
-                        desktopWriteStream.write(newContents + '\n');
-                    }
-                } else if (fileName.includes('.mobile')) {
-                    if (mobileCounter === 0) {
-                        mobileWriteStream.write(fileContents + '\n');
-                        console.log("appending to mobile");
-                        mobileCounter++;
-                    } else {
-                        let newContents = fileContents.split('\n').slice(1).join('\n');
-                        console.log("appending to mobile");
-                        mobileWriteStream.write(newContents + '\n');
-                    }
-                }
-            }
-        });
+        _processCSVFiles(files, directoryPath, desktopWriteStream, mobileWriteStream);
     }
     catch (e) {
         console.error(e);
-        return false;
+        didAggregateSuccessfully = false;
     } finally {
         desktopWriteStream.close();
         mobileWriteStream.close();
     }
-    return true;
+    return didAggregateSuccessfully;
 }
 
 
-/**
- *  Opens generated reports in your preferred browser as an explorable list
- *  @param {Number} port Port used by Express
- */
-const openReports = (port) => {
-    const express = require('express');
-    const serveIndex = require('serve-index');
-    const app = express();
-    try {
-        app.use(express.static('lighthouse'), serveIndex('lighthouse', { 'icons': true }));
-        app.listen(port);
-        open('http://localhost:' + port);
-        return true;
-    } catch (e) {
-        throw e;
-    }
-
-};
-
-/**
- * Opens **all** generated reports in your preferred browser without a local server
- *
- * @param {*} tempFilePath
- */
-const openReportsWithoutServer = (tempFilePath) => {
-    let filePath = tempFilePath;
-    /* istanbul ignore next */
-    if (fs.existsSync(filePath)) {
-        fs.readdirSync(filePath).forEach(file => {
-            console.log('Opening: ', file);
-            let tempPath = path.join(tempFilePath, file);
-            open(tempPath);
-        });
-        return true;
-    }
-    return false;
-};
-/**
- * Main function.
- * This kicks off the Lighthouse Runner process
- * @param {commander} program - An instance of a Commander.js program
- */
-function main(program) {
-    let domainRoot;
-    let simpleCrawler;
+const _parseProgramParameters = (program) => {
     outputMode = program.format;
+    port = program.port;
     if (program.threads === undefined) {
         threads = os.cpus().length;
     } else {
@@ -346,26 +240,19 @@ function main(program) {
     } else {
         autoOpen = program.express;
     }
-    if (program.url === undefined) {
-        throw new Error('No URL given, quitting!');
-    } else {
-        if (Array.isArray(program.url)) {
-            domainRoot = [];
-            program.url.forEach(_url => {
-                if (!_url.startsWith('https://') && !_url.startsWith('http://')) {
-                    _url = 'https://' + _url;
-                }
-                domainRoot.push(new URL(_url));
-            });
-        } else {
-            if (!program.url.startsWith('https://') && !program.url.startsWith('http://')) {
-                program.url = 'https://' + program.url;
-            }
-            domainRoot = new URL(program.url);
-        }
-    }
-    let isDomainRootAnArray = Array.isArray(domainRoot);
-    port = program.port;
+};
+
+
+/**
+ *  Sets up the 'queueadd' and 'complete' events for the crawler
+ *
+ * @param {string} domainRoot
+ * @param {Crawler} simpleCrawler
+ * @param {boolean} isDomainRootAnArray
+ * @param {string[]} urlList
+ * @returns
+ */
+const _setupCrawlerEvents = (domainRoot, simpleCrawler, isDomainRootAnArray, urlList) => {
     if (isDomainRootAnArray) {
         simpleCrawler = Crawler(domainRoot[0].href)
             .on('queueadd', (queueItem) => {
@@ -374,7 +261,6 @@ function main(program) {
             .on('complete', () => {
                 complete(urlList, autoOpen);
             });
-
     } else {
         simpleCrawler = Crawler(domainRoot.href)
             .on('queueadd', (queueItem) => {
@@ -384,27 +270,24 @@ function main(program) {
                 complete(urlList, autoOpen);
             });
     }
+    return simpleCrawler;
+};
 
-    for (let key in simpleCrawlerConfig) {
-        simpleCrawler[key] = simpleCrawlerConfig[key];
-    }
-    simpleCrawler.ignoreWWWDomain = true;
-    simpleCrawler.respectRobotsTxt = program.respect;
+/**
+ * Main function.
+ * This kicks off the Lighthouse Runner process
+ * @param {commander} program - An instance of a Commander.js program
+ */
+function main(program) {
+    let domainRoot;
+    let simpleCrawler;
+    _parseProgramParameters(program);
+    domainRoot = _parseProgramURLs(program);
+    let isDomainRootAnArray = Array.isArray(domainRoot);
     let urlList = [];
-    if (isDomainRootAnArray) {
-        if (domainRoot.length > 1) {
-            domainRoot.forEach(root => {
-                if (!simpleCrawler.queue.includes(root)) {
-                    simpleCrawler.domainWhitelist.push(root.hostname);
-                    simpleCrawler.queueURL(root.href);
-                }
-            });
-        } else {
-            urlList.push(domainRoot[0].href);
-        }
-    } else {
-        urlList.push(domainRoot.href);
-    }
+    simpleCrawler = _setupCrawlerEvents(domainRoot, simpleCrawler, isDomainRootAnArray, urlList);
+    _setupCrawlerConfig(simpleCrawler, program);
+    _populateCrawledURLList(isDomainRootAnArray, domainRoot, simpleCrawler, urlList);
 
     if (autoOpen) {
         console.log('Automatically opening reports when done!');
