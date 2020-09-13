@@ -23,6 +23,10 @@ const {
     _setupCrawlerConfig,
     _populateCrawledURLList
 } = require('./helpers');
+const {
+    _opts,
+    _desktopOpts
+} = require('./lighthouse_opts');
 
 /**
  * Launches a headless instance of chrome and runs Lighthouse on that instance.
@@ -162,17 +166,11 @@ const complete = (urlList, autoOpen) => {
     ? https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
     ? for more information on config options for lighthouse
     */
-    let opts = {
-        extends: 'lighthouse:default',
-        chromeFlags: ['--headless'],
-        output: outputMode
-    };
-    let desktopOpts = {
-        extends: 'lighthouse:default',
-        chromeFlags: ['--headless'],
-        emulatedFormFactor: 'desktop',
-        output: outputMode
-    };
+    
+    let opts = _opts;
+    opts.output = outputMode;
+    let desktopOpts = _desktopOpts;
+    desktopOpts.output = outputMode;
     const fileTime = createFileTime();
     // tempFilePath is wherever we want to store the generated report
     let tempFilePath = path.join(process.cwd(), "lighthouse", fileTime);
