@@ -162,6 +162,15 @@ const queueAdd = (queueItem, urlList) => {
     }
 };
 
+const createFileTime = () => {
+    let fileTime = new Date().toLocaleString();
+    // Replacing characters that make OS sad
+    fileTime = fileTime.replace(/ /g, '__');
+    fileTime = fileTime.replace(/\//g, '_');
+    fileTime = fileTime.replace(/,/g, '_');
+    fileTime = fileTime.replace(/:/g, "_");
+    return fileTime;
+};
 /* istanbul ignore next */
 /**
  *
@@ -185,12 +194,7 @@ const complete = (urlList, autoOpen) => {
         emulatedFormFactor: 'desktop',
         output: outputMode
     };
-    let fileTime = new Date().toLocaleString();
-    // Replacing characters that make OS sad
-    fileTime = fileTime.replace(/ /g, '__');
-    fileTime = fileTime.replace(/\//g, '_');
-    fileTime = fileTime.replace(/,/g, '_');
-    fileTime = fileTime.replace(/:/g, "_");
+    const fileTime = createFileTime();
     // tempFilePath is wherever we want to store the generated report
     let tempFilePath = path.join(process.cwd(), "lighthouse", fileTime);
     if (!fs.existsSync(tempFilePath)) {
