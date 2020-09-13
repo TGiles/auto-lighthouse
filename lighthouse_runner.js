@@ -323,7 +323,7 @@ const aggregateCSVReports = (directoryPath) => {
                 let formFactor = _determineFormFactorReport(fileName);
                 if (formFactor === 'desktop') {
                     desktopCounter = _writeDesktopCSVStream(desktopCounter, desktopWriteStream, fileContents);
-                    }
+                }
                 if (formFactor === 'mobile') {
                     mobileCounter = _writeMobileCSVStream(mobileCounter, mobileWriteStream, fileContents);
                 }
@@ -378,15 +378,10 @@ const openReportsWithoutServer = (tempFilePath) => {
     }
     return false;
 };
-/**
- * Main function.
- * This kicks off the Lighthouse Runner process
- * @param {commander} program - An instance of a Commander.js program
- */
-function main(program) {
-    let domainRoot;
-    let simpleCrawler;
+
+const _parseProgramParameters = (program) => {
     outputMode = program.format;
+    port = program.port;
     if (program.threads === undefined) {
         threads = os.cpus().length;
     } else {
@@ -397,26 +392,41 @@ function main(program) {
     } else {
         autoOpen = program.express;
     }
+};
+
+const _determineURLs = (urls, domainRoot) => {
+    urls.forEach(url => {
+        if (!url.startsWith('https://') && !url.startsWith('http://')) {
+            url = 'https://' + url;
+        }
+        domainRoot.push(new URL(url));
+    });
+};
+
+const _parseProgramURLs = (program) => {
+    let domainRoot;
     if (program.url === undefined) {
         throw new Error('No URL given, quitting!');
-    } else {
-        if (Array.isArray(program.url)) {
-            domainRoot = [];
-            program.url.forEach(_url => {
-                if (!_url.startsWith('https://') && !_url.startsWith('http://')) {
-                    _url = 'https://' + _url;
-                }
-                domainRoot.push(new URL(_url));
-            });
-        } else {
-            if (!program.url.startsWith('https://') && !program.url.startsWith('http://')) {
-                program.url = 'https://' + program.url;
-            }
-            domainRoot = new URL(program.url);
-        }
     }
-    let isDomainRootAnArray = Array.isArray(domainRoot);
-    port = program.port;
+    if (Array.isArray(program.url)) {
+        domainRoot = [];
+        _determineURLs(program.url, domainRoot);
+    } else {
+        if (!program.url.startsWith('https://') && !program.url.startsWith('http://')) {
+            program.url = 'https://' + program.url;
+        }
+        domainRoot = new URL(program.url);
+    }
+    return domainRoot;
+};
+
+/**
+ *
+ *
+ * @param {*} domainRoot
+ * @returns {Crawler} 
+ */
+const _setupCrawlerEvents = (domainRoot, simpleCrawler, isDomainRootAnArray, urlList) => {
     if (isDomainRootAnArray) {
         simpleCrawler = Crawler(domainRoot[0].href)
             .on('queueadd', (queueItem) => {
@@ -425,7 +435,6 @@ function main(program) {
             .on('complete', () => {
                 complete(urlList, autoOpen);
             });
-
     } else {
         simpleCrawler = Crawler(domainRoot.href)
             .on('queueadd', (queueItem) => {
@@ -435,13 +444,18 @@ function main(program) {
                 complete(urlList, autoOpen);
             });
     }
+    return simpleCrawler;
+};
 
+const _setupCrawlerConfig = (simpleCrawler, program) => {
     for (let key in simpleCrawlerConfig) {
         simpleCrawler[key] = simpleCrawlerConfig[key];
     }
     simpleCrawler.ignoreWWWDomain = true;
     simpleCrawler.respectRobotsTxt = program.respect;
-    let urlList = [];
+};
+
+const _populateCrawledURLList = (isDomainRootAnArray, domainRoot, simpleCrawler, urlList) => {
     if (isDomainRootAnArray) {
         if (domainRoot.length > 1) {
             domainRoot.forEach(root => {
@@ -456,6 +470,22 @@ function main(program) {
     } else {
         urlList.push(domainRoot.href);
     }
+};
+/**
+ * Main function.
+ * This kicks off the Lighthouse Runner process
+ * @param {commander} program - An instance of a Commander.js program
+ */
+function main(program) {
+    let domainRoot;
+    let simpleCrawler;
+    _parseProgramParameters(program);
+    domainRoot = _parseProgramURLs(program);
+    let isDomainRootAnArray = Array.isArray(domainRoot);
+    let urlList = [];
+    simpleCrawler = _setupCrawlerEvents(domainRoot, simpleCrawler, isDomainRootAnArray, urlList);
+    _setupCrawlerConfig(simpleCrawler, program);
+    _populateCrawledURLList(isDomainRootAnArray, domainRoot, simpleCrawler, urlList);
 
     if (autoOpen) {
         console.log('Automatically opening reports when done!');
