@@ -232,53 +232,67 @@ const complete = (urlList, autoOpen) => {
 /**
  *
  *
- * @param {Number} desktopCounter
+ * @param {boolean} isFirstDesktopReport
  * @param {fs.WriteStream} desktopWriteStream
  * @param {String} fileContents
- * @returns
+ * @returns a boolean representing if the given report is the first of its kind
  */
-const _writeDesktopCSVStream = (desktopCounter, desktopWriteStream, fileContents) => {
-    if (desktopCounter === 0) {
+const _writeDesktopCSVStream = (isFirstDesktopReport, desktopWriteStream, fileContents) => {
+    if (isFirstDesktopReport) {
         desktopWriteStream.write(fileContents + '\n');
         console.log("appending to desktop");
-        desktopCounter++;
+        isFirstDesktopReport = false;
     } else {
         let newContents = fileContents.split('\n').slice(1).join('\n');
         console.log("appending to desktop");
         desktopWriteStream.write(newContents + '\n');
     }
-    return desktopCounter;
-};
-
-const _determineFormFactorReport = (fileName) => {
-    let returnValue;
-    if (fileName.includes('.desktop')) {
-        returnValue = 'desktop';
-    } else if (fileName.includes('.mobile')) {
-        returnValue = 'mobile';
-    }
-    return returnValue;
+    return isFirstDesktopReport;
 };
 
 /**
+ *  Determines the form factor of the given Lighthouse report
  *
+ * @param {string} fileName
+ * @returns Can be either "desktop" or "mobile" form factor string
+ */
+const _determineFormFactorReport = (fileName) => {
+    let formFactor;
+    if (fileName.includes('.desktop')) {
+        formFactor = 'desktop';
+    } else if (fileName.includes('.mobile')) {
+        formFactor = 'mobile';
+    }
+    return formFactor;
+};
+
+/**
+ * Writes data to the mobile aggregate report
  *
- * @param {Number} mobileCounter
+ * @param {boolean} isFirstMobileReport
  * @param {fs.WriteStream} mobileWriteStream
  * @param {String} fileContents
+ * @returns a boolean representing if the given report is the first of its kind
  */
-const _writeMobileCSVStream = (mobileCounter, mobileWriteStream, fileContents) => {
-    if (mobileCounter === 0) {
+const _writeMobileCSVStream = (isFirstMobileReport, mobileWriteStream, fileContents) => {
+    if (isFirstMobileReport) {
         mobileWriteStream.write(fileContents + '\n');
         console.log("appending to mobile");
-        mobileCounter++;
+        isFirstMobileReport = false;
     } else {
         let newContents = fileContents.split('\n').slice(1).join('\n');
         console.log("appending to mobile");
         mobileWriteStream.write(newContents + '\n');
     }
+    return isFirstMobileReport;
 };
 
+/**
+ *  Reads the CSV report directory and obtains a list of files
+ *
+ * @param {string} directoryPath
+ * @returns An array of files or false if the directory does not exist
+ */
 const _readReportDirectory = (directoryPath) => {
     let files;
     try {
@@ -291,6 +305,13 @@ const _readReportDirectory = (directoryPath) => {
 };
 
 
+/**
+ * Creates write streams for the desktop and mobile aggregate reports
+ *
+ * @param {string} timestamp
+ * @param {string} directoryPath
+ * @returns an array of write streams
+ */
 const _createWriteStreams = (timestamp, directoryPath) => {
     const desktopAggregateReportName = timestamp + '_desktop_aggregateReport.csv';
     const mobileAggregateReportName = timestamp + '_mobile_aggregateReport.csv';
@@ -301,28 +322,37 @@ const _createWriteStreams = (timestamp, directoryPath) => {
     return [desktopWriteStream, mobileWriteStream];
 };
 
+/**
+ * Process the CSV reports and write their data to the respective write stream.
+ *
+ * @param {string[]} files
+ * @param {string} directoryPath
+ * @param {fs.WriteStream} desktopWriteStream
+ * @param {fs.WriteStream} mobileWriteStream
+ */
 const _processCSVFiles = (files, directoryPath, desktopWriteStream, mobileWriteStream) => {
-    let desktopCounter = 0;
-    let mobileCounter = 0;
+    let isFirstDesktopReport = true;
+    let isFirstMobileReport = true;
     files.forEach(fileName => {
         let filePath = path.join(directoryPath, fileName);
         let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
         let formFactor = _determineFormFactorReport(fileName);
         if (formFactor === 'desktop') {
-            desktopCounter = _writeDesktopCSVStream(desktopCounter, desktopWriteStream, fileContents);
+            isFirstDesktopReport = _writeDesktopCSVStream(isFirstDesktopReport, desktopWriteStream, fileContents);
         }
         if (formFactor === 'mobile') {
-            mobileCounter = _writeMobileCSVStream(mobileCounter, mobileWriteStream, fileContents);
+            isFirstMobileReport = _writeMobileCSVStream(isFirstMobileReport, mobileWriteStream, fileContents);
         }
 
     });
 };
 
 /**
- *
+ * Given a directory path to CSV reports, create two aggregate reports from the data.
+ * One aggregate report is for desktop data and the other report is for mobile data.
  *
  * @param {string} directoryPath
- * @returns
+ * @returns {boolean} didAggregateSuccessfully
  */
 const aggregateCSVReports = (directoryPath) => {
     let didAggregateSuccessfully = true;
