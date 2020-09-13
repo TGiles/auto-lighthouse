@@ -232,12 +232,56 @@ const complete = (urlList, autoOpen) => {
 /**
  *
  *
- * @param {string} directoryPath
+ * @param {Number} desktopCounter
+ * @param {fs.WriteStream} desktopWriteStream
+ * @param {String} fileContents
  * @returns
  */
-const aggregateCSVReports = (directoryPath) => {
-    const parsedDirectoryPath = path.parse(directoryPath);
-    const timestamp = parsedDirectoryPath.base;
+const _writeDesktopCSVStream = (desktopCounter, desktopWriteStream, fileContents) => {
+    if (desktopCounter === 0) {
+        desktopWriteStream.write(fileContents + '\n');
+        console.log("appending to desktop");
+        desktopCounter++;
+    } else {
+        let newContents = fileContents.split('\n').slice(1).join('\n');
+        console.log("appending to desktop");
+        desktopWriteStream.write(newContents + '\n');
+    }
+    return desktopCounter;
+};
+
+const _determineFormFactorReport = (fileName) => {
+    let returnValue;
+    if (fileName.includes('.desktop')) {
+        // desktopCounter = _writeDesktopCSVStream(desktopCounter, desktopWriteStream, fileContents);
+        returnValue = 'desktop';
+    } else if (fileName.includes('.mobile')) {
+        // mobileCounter = _writeMobileCSVStream(mobileCounter, mobileWriteStream, fileContents);
+        returnValue = 'mobile';
+    }
+    return returnValue;
+};
+
+/**
+ *
+ *
+ * @param {Number} mobileCounter
+ * @param {fs.WriteStream} mobileWriteStream
+ * @param {String} fileContents
+ */
+const _writeMobileCSVStream = (mobileCounter, mobileWriteStream, fileContents) => {
+    if (mobileCounter === 0) {
+        mobileWriteStream.write(fileContents + '\n');
+        console.log("appending to mobile");
+        mobileCounter++;
+    } else {
+        let newContents = fileContents.split('\n').slice(1).join('\n');
+        console.log("appending to mobile");
+        mobileWriteStream.write(newContents + '\n');
+    }
+};
+
+const _readReportDirectory = (directoryPath) => {
     let files;
     try {
         files = fs.readdirSync(directoryPath);
@@ -245,7 +289,25 @@ const aggregateCSVReports = (directoryPath) => {
         console.error(e);
         return false;
     }
+    return files;
+};
 
+const _processFiles = () => {
+
+};
+
+/**
+ *
+ *
+ * @param {string} directoryPath
+ * @returns
+ */
+const aggregateCSVReports = (directoryPath) => {
+    let returnValue = true;
+    const parsedDirectoryPath = path.parse(directoryPath);
+    const timestamp = parsedDirectoryPath.base;
+    let files = _readReportDirectory(directoryPath);
+    let filePath = path.join(directoryPath, fileName);
     const desktopAggregateReportName = timestamp + '_desktop_aggregateReport.csv';
     const mobileAggregateReportName = timestamp + '_mobile_aggregateReport.csv';
     let desktopAggregatePath = path.join(directoryPath, desktopAggregateReportName);
@@ -257,40 +319,25 @@ const aggregateCSVReports = (directoryPath) => {
     try {
         files.forEach(fileName => {
             if (fileName !== desktopAggregateReportName && fileName !== mobileAggregateReportName) {
-                let filePath = path.join(directoryPath, fileName);
                 let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
-                if (fileName.includes('.desktop')) {
-                    if (desktopCounter === 0) {
-                        desktopWriteStream.write(fileContents + '\n');
-                        console.log("appending to desktop");
-                        desktopCounter++;
-                    } else {
-                        let newContents = fileContents.split('\n').slice(1).join('\n');
-                        console.log("appending to desktop");
-                        desktopWriteStream.write(newContents + '\n');
+                let formFactor = _determineFormFactorReport(fileName);
+                if (formFactor === 'desktop') {
+                    desktopCounter = _writeDesktopCSVStream(desktopCounter, desktopWriteStream, fileContents);
                     }
-                } else if (fileName.includes('.mobile')) {
-                    if (mobileCounter === 0) {
-                        mobileWriteStream.write(fileContents + '\n');
-                        console.log("appending to mobile");
-                        mobileCounter++;
-                    } else {
-                        let newContents = fileContents.split('\n').slice(1).join('\n');
-                        console.log("appending to mobile");
-                        mobileWriteStream.write(newContents + '\n');
-                    }
+                if (formFactor === 'mobile') {
+                    mobileCounter = _writeMobileCSVStream(mobileCounter, mobileWriteStream, fileContents);
                 }
             }
         });
     }
     catch (e) {
         console.error(e);
-        return false;
+        returnValue = false;
     } finally {
         desktopWriteStream.close();
         mobileWriteStream.close();
     }
-    return true;
+    return returnValue;
 }
 
 
