@@ -290,8 +290,32 @@ const _readReportDirectory = (directoryPath) => {
     return files;
 };
 
-const _processFiles = () => {
 
+const _createWriteStreams = (timestamp, directoryPath) => {
+    const desktopAggregateReportName = timestamp + '_desktop_aggregateReport.csv';
+    const mobileAggregateReportName = timestamp + '_mobile_aggregateReport.csv';
+    let desktopAggregatePath = path.join(directoryPath, desktopAggregateReportName);
+    let mobileAggregatePath = path.join(directoryPath, mobileAggregateReportName);
+    let desktopWriteStream = fs.createWriteStream(desktopAggregatePath, { flags: 'a', autoClose: false });
+    let mobileWriteStream = fs.createWriteStream(mobileAggregatePath, { flags: 'a', autoClose: false });
+    return [desktopWriteStream, mobileWriteStream];
+};
+
+const _processCSVFiles = (files, directoryPath, desktopWriteStream, mobileWriteStream) => {
+    let desktopCounter = 0;
+    let mobileCounter = 0;
+    files.forEach(fileName => {
+        let filePath = path.join(directoryPath, fileName);
+        let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
+        let formFactor = _determineFormFactorReport(fileName);
+        if (formFactor === 'desktop') {
+            desktopCounter = _writeDesktopCSVStream(desktopCounter, desktopWriteStream, fileContents);
+        }
+        if (formFactor === 'mobile') {
+            mobileCounter = _writeMobileCSVStream(mobileCounter, mobileWriteStream, fileContents);
+        }
+
+    });
 };
 
 /**
@@ -301,44 +325,27 @@ const _processFiles = () => {
  * @returns
  */
 const aggregateCSVReports = (directoryPath) => {
-    let returnValue = true;
+    let didAggregateSuccessfully = true;
     const parsedDirectoryPath = path.parse(directoryPath);
     const timestamp = parsedDirectoryPath.base;
     let files = _readReportDirectory(directoryPath);
     if (!files) {
         return false;
     }
-    const desktopAggregateReportName = timestamp + '_desktop_aggregateReport.csv';
-    const mobileAggregateReportName = timestamp + '_mobile_aggregateReport.csv';
-    let desktopAggregatePath = path.join(directoryPath, desktopAggregateReportName);
-    let mobileAggregatePath = path.join(directoryPath, mobileAggregateReportName);
-    let desktopWriteStream = fs.createWriteStream(desktopAggregatePath, { flags: 'a', autoClose: false });
-    let mobileWriteStream = fs.createWriteStream(mobileAggregatePath, { flags: 'a', autoClose: false });
-    let desktopCounter = 0;
-    let mobileCounter = 0;
+    let [desktopWriteStream, mobileWriteStream] = _createWriteStreams(timestamp, directoryPath);
+    const aggregateName = "_aggregateReport";
+    files = files.filter(fileName => !fileName.includes(aggregateName));
     try {
-        files.forEach(fileName => {
-            if (fileName !== desktopAggregateReportName && fileName !== mobileAggregateReportName) {
-                let filePath = path.join(directoryPath, fileName);
-                let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
-                let formFactor = _determineFormFactorReport(fileName);
-                if (formFactor === 'desktop') {
-                    desktopCounter = _writeDesktopCSVStream(desktopCounter, desktopWriteStream, fileContents);
-                }
-                if (formFactor === 'mobile') {
-                    mobileCounter = _writeMobileCSVStream(mobileCounter, mobileWriteStream, fileContents);
-                }
-            }
-        });
+        _processCSVFiles(files, directoryPath, desktopWriteStream, mobileWriteStream);
     }
     catch (e) {
         console.error(e);
-        returnValue = false;
+        didAggregateSuccessfully = false;
     } finally {
         desktopWriteStream.close();
         mobileWriteStream.close();
     }
-    return returnValue;
+    return didAggregateSuccessfully;
 }
 
 
