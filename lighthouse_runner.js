@@ -493,18 +493,21 @@ const _setupCrawlerConfig = (simpleCrawler, program) => {
     simpleCrawler.respectRobotsTxt = program.respect;
 };
 
+const _populateURLArray = (domainRoot, simpleCrawler, urlList) => {
+    if (domainRoot.length > 1) {
+        domainRoot.forEach(root => {
+            if (!simpleCrawler.queue.includes(root)) {
+                simpleCrawler.domainWhitelist.push(root.hostname);
+                simpleCrawler.queueURL(root.href);
+            }
+        });
+    } else {
+        urlList.push(domainRoot[0].href);
+    }
+};
 const _populateCrawledURLList = (isDomainRootAnArray, domainRoot, simpleCrawler, urlList) => {
     if (isDomainRootAnArray) {
-        if (domainRoot.length > 1) {
-            domainRoot.forEach(root => {
-                if (!simpleCrawler.queue.includes(root)) {
-                    simpleCrawler.domainWhitelist.push(root.hostname);
-                    simpleCrawler.queueURL(root.href);
-                }
-            });
-        } else {
-            urlList.push(domainRoot[0].href);
-        }
+        _populateURLArray(domainRoot, simpleCrawler, urlList);
     } else {
         urlList.push(domainRoot.href);
     }
