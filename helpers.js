@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const open = require('open');
 const simpleCrawlerConfig = require('./config/simpleCrawler');
 /**
  *  Determines the form factor of the given Lighthouse report
@@ -204,6 +205,66 @@ const _populateCrawledURLList = (isDomainRootAnArray, domainRoot, simpleCrawler,
   }
 };
 
+const _determineResultingFilePath = (opts, filePath, tempFilePath, replacedUrl) => {
+  if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
+      filePath = path.join(tempFilePath, replacedUrl + '.desktop.report.' + opts.output);
+  } else {
+      filePath = path.join(tempFilePath, replacedUrl + '.mobile.report.' + opts.output);
+  }
+  return filePath;
+};
+
+const _writeReportResultFile = (filePath, report, opts, currentUrl, tempFilePath) => {
+  fs.writeFile(filePath, report, {
+      encoding: 'utf-8'
+  }, (err) => {
+      if (err)
+          throw err;
+      if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
+          console.log('Wrote desktop report: ', currentUrl, 'at: ', tempFilePath);
+      } else {
+          console.log('Wrote mobile report: ', currentUrl, 'at: ', tempFilePath);
+      }
+  });
+};
+
+/**
+ *  Opens generated reports in your preferred browser as an explorable list
+ *  @param {Number} port Port used by Express
+ */
+const openReports = (port) => {
+    const express = require('express');
+    const serveIndex = require('serve-index');
+    const app = express();
+    try {
+        app.use(express.static('lighthouse'), serveIndex('lighthouse', { 'icons': true }));
+        app.listen(port);
+        open('http://localhost:' + port);
+        return true;
+    } catch (e) {
+        throw e;
+    }
+};
+
+/**
+ * Opens **all** generated reports in your preferred browser without a local server
+ *
+ * @param {string} tempFilePath
+ */
+const openReportsWithoutServer = (tempFilePath) => {
+    let filePath = tempFilePath;
+    /* istanbul ignore next */
+    if (fs.existsSync(filePath)) {
+        fs.readdirSync(filePath).forEach(file => {
+            console.log('Opening: ', file);
+            let tempPath = path.join(tempFilePath, file);
+            open(tempPath);
+        });
+        return true;
+    }
+    return false;
+};
+
 module.exports = {
   _determineFormFactorReport,
   _readReportDirectory,
@@ -217,5 +278,9 @@ module.exports = {
   _parseProgramURLs,
   _setupCrawlerConfig,
   _populateURLArray,
-  _populateCrawledURLList
+  _populateCrawledURLList,
+  _determineResultingFilePath,
+  _writeReportResultFile,
+  openReports,
+  openReportsWithoutServer
 };

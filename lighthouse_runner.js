@@ -4,8 +4,6 @@ const generateReport = require('lighthouse/lighthouse-core/report/report-generat
 const chromeLauncher = require('chrome-launcher');
 const fs = require('fs');
 const path = require('path');
-const { URL } = require('url');
-const open = require('open');
 const os = require('os');
 let autoOpen = false;
 let port;
@@ -21,7 +19,11 @@ const {
     createFileTime,
     _parseProgramURLs,
     _setupCrawlerConfig,
-    _populateCrawledURLList
+    _populateCrawledURLList,
+    _determineResultingFilePath,
+    _writeReportResultFile,
+    openReports,
+    openReportsWithoutServer
 } = require('./helpers');
 const {
     _opts,
@@ -108,22 +110,9 @@ const processResults = (processObj) => {
     let replacedUrl = splitUrl[1].replace(/\//g, "_");
     let report = generateReport.generateReport(results, opts.output);
     let filePath;
-    if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
-        filePath = path.join(tempFilePath, replacedUrl + '.desktop.report.' + opts.output);
-    } else {
-        filePath = path.join(tempFilePath, replacedUrl + '.mobile.report.' + opts.output);
-    }
+    filePath = _determineResultingFilePath(opts, filePath, tempFilePath, replacedUrl);
     // https://stackoverflow.com/questions/34811222/writefile-no-such-file-or-directory
-    fs.writeFile(filePath, report, {
-        encoding: 'utf-8'
-    }, (err) => {
-        if (err) throw err;
-        if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
-            console.log('Wrote desktop report: ', currentUrl, 'at: ', tempFilePath);
-        } else {
-            console.log('Wrote mobile report: ', currentUrl, 'at: ', tempFilePath);
-        }
-    });
+    _writeReportResultFile(filePath, report, opts, currentUrl, tempFilePath);
 };
 
 /**
@@ -166,7 +155,7 @@ const complete = (urlList, autoOpen) => {
     ? https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
     ? for more information on config options for lighthouse
     */
-    
+
     let opts = _opts;
     opts.output = outputMode;
     let desktopOpts = _desktopOpts;
@@ -238,44 +227,6 @@ const aggregateCSVReports = (directoryPath) => {
 }
 
 
-/**
- *  Opens generated reports in your preferred browser as an explorable list
- *  @param {Number} port Port used by Express
- */
-const openReports = (port) => {
-    const express = require('express');
-    const serveIndex = require('serve-index');
-    const app = express();
-    try {
-        app.use(express.static('lighthouse'), serveIndex('lighthouse', { 'icons': true }));
-        app.listen(port);
-        open('http://localhost:' + port);
-        return true;
-    } catch (e) {
-        throw e;
-    }
-
-};
-
-/**
- * Opens **all** generated reports in your preferred browser without a local server
- *
- * @param {string} tempFilePath
- */
-const openReportsWithoutServer = (tempFilePath) => {
-    let filePath = tempFilePath;
-    /* istanbul ignore next */
-    if (fs.existsSync(filePath)) {
-        fs.readdirSync(filePath).forEach(file => {
-            console.log('Opening: ', file);
-            let tempPath = path.join(tempFilePath, file);
-            open(tempPath);
-        });
-        return true;
-    }
-    return false;
-};
-
 const _parseProgramParameters = (program) => {
     outputMode = program.format;
     port = program.port;
@@ -321,6 +272,7 @@ const _setupCrawlerEvents = (domainRoot, simpleCrawler, isDomainRootAnArray, url
     }
     return simpleCrawler;
 };
+
 /**
  * Main function.
  * This kicks off the Lighthouse Runner process
