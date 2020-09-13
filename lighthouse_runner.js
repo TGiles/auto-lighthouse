@@ -307,7 +307,9 @@ const aggregateCSVReports = (directoryPath) => {
     const parsedDirectoryPath = path.parse(directoryPath);
     const timestamp = parsedDirectoryPath.base;
     let files = _readReportDirectory(directoryPath);
-    let filePath = path.join(directoryPath, fileName);
+    if (!files) {
+        return false;
+    }
     const desktopAggregateReportName = timestamp + '_desktop_aggregateReport.csv';
     const mobileAggregateReportName = timestamp + '_mobile_aggregateReport.csv';
     let desktopAggregatePath = path.join(directoryPath, desktopAggregateReportName);
@@ -319,6 +321,7 @@ const aggregateCSVReports = (directoryPath) => {
     try {
         files.forEach(fileName => {
             if (fileName !== desktopAggregateReportName && fileName !== mobileAggregateReportName) {
+                let filePath = path.join(directoryPath, fileName);
                 let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
                 let formFactor = _determineFormFactorReport(fileName);
                 if (formFactor === 'desktop') {
