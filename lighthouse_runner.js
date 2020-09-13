@@ -253,10 +253,8 @@ const _writeDesktopCSVStream = (desktopCounter, desktopWriteStream, fileContents
 const _determineFormFactorReport = (fileName) => {
     let returnValue;
     if (fileName.includes('.desktop')) {
-        // desktopCounter = _writeDesktopCSVStream(desktopCounter, desktopWriteStream, fileContents);
         returnValue = 'desktop';
     } else if (fileName.includes('.mobile')) {
-        // mobileCounter = _writeMobileCSVStream(mobileCounter, mobileWriteStream, fileContents);
         returnValue = 'mobile';
     }
     return returnValue;
