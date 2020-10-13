@@ -1,3 +1,11 @@
+* build(deps-dev): bump release-it from 14.0.4 to 14.1.0 (#164) (4bab439)
+* build(deps-dev): bump release-it from 14.0.3 to 14.0.4 (#163) (e3ff7fa)
+* build(deps): bump lighthouse from 6.3.0 to 6.4.1 (#162) (f3a00c3)
+* build(deps): bump open from 7.2.1 to 7.3.0 (#161) (d7b695d)
+* build(deps-dev): bump release-it from 14.0.2 to 14.0.3 (#159) (8fc9322)
+* build(deps-dev): bump @commitlint/cli from 9.1.2 to 11.0.0 (#160) (d10d34a)
+* refactor: reduce tech debt and complexity (#158) (ae198f2)
+
 * ci: fix forks not being able to use labeler action (1aa19bd)
 * refactor: make output names prettier (#157) (0362ca1)
 * build(deps-dev): bump @release-it/conventional-changelog (#156) (ff15a41)
