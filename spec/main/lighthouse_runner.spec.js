@@ -3,7 +3,7 @@ const fs = require('fs');
 
 
 describe('aggregateCSVReports', () => {
-  it('should create two aggregate reports', () => {
+  it('should create two aggregate reports', async () => {
     let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM');
     let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_desktop_aggregateReport.csv');
     let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_mobile_aggregateReport.csv');
@@ -27,7 +27,7 @@ describe('aggregateCSVReports', () => {
     }
     let runner = require('../../lighthouse_runner');
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
-    let result = runner.aggregateCSVReports(testPath);
+    let result = await runner.aggregateCSVReports(testPath);
     expect(result).toBeTrue();
     expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath);
     let desktopReportExists = fs.existsSync(testDesktopAggregatePath);
@@ -36,11 +36,11 @@ describe('aggregateCSVReports', () => {
     expect(mobileReportExists).toBeTrue();
   });
 
-  it('should return false if directory parameter does not exist', () => {
+  it('should return false if directory parameter does not exist', async () => {
     const fakePath = 'testFakePath';
     let runner = require('../../lighthouse_runner');
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
-    let result = runner.aggregateCSVReports(fakePath);
+    let result = await runner.aggregateCSVReports(fakePath);
     expect(runner.aggregateCSVReports).toHaveBeenCalledWith(fakePath);
     expect(result).toBeFalse();
   });
