@@ -1,3 +1,10 @@
+* fix: ensure write streams are closed before leaving CSV aggregation function (#170) (0de43b6)
+* build(deps-dev): bump release-it from 14.2.0 to 14.2.1 (#169) (086cc44)
+* build(deps-dev): bump jasmine from 3.6.2 to 3.6.3 (#168) (1e00211)
+* build(deps): bump commander from 6.1.0 to 6.2.0 (#167) (7528577)
+* build(deps-dev): bump release-it from 14.1.0 to 14.2.0 (#166) (38e5fb4)
+* build(deps-dev): bump jasmine from 3.6.1 to 3.6.2 (#165) (23ed4df)
+
 * build(deps-dev): bump release-it from 14.0.4 to 14.1.0 (#164) (4bab439)
 * build(deps-dev): bump release-it from 14.0.3 to 14.0.4 (#163) (e3ff7fa)
 * build(deps): bump lighthouse from 6.3.0 to 6.4.1 (#162) (f3a00c3)
