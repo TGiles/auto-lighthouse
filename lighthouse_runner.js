@@ -202,7 +202,7 @@ const complete = (urlList, autoOpen) => {
  * @param {string} directoryPath
  * @returns {boolean} didAggregateSuccessfully
  */
-const aggregateCSVReports = (directoryPath) => {
+const aggregateCSVReports = async (directoryPath) => {
     let didAggregateSuccessfully = true;
     const parsedDirectoryPath = path.parse(directoryPath);
     const timestamp = parsedDirectoryPath.base;
@@ -223,6 +223,16 @@ const aggregateCSVReports = (directoryPath) => {
         desktopWriteStream.close();
         mobileWriteStream.close();
     }
+    let desktopClosed = new Promise((resolve) => {
+        desktopWriteStream.on("close", () => resolve(true));
+    });
+    let mobileClosed = new Promise((resolve) => {
+        mobileWriteStream.on("close", () => resolve(true));
+    });
+    console.log("Waiting for streams to close!");
+    await desktopClosed;
+    await mobileClosed;
+    console.log("Streams closed!");
     return didAggregateSuccessfully;
 }
 
