@@ -11,9 +11,9 @@ const simpleCrawlerConfig = require('./config/simpleCrawler');
 const _determineFormFactorReport = (fileName) => {
   let formFactor;
   if (fileName.includes('.desktop')) {
-      formFactor = 'desktop';
+    formFactor = 'desktop';
   } else if (fileName.includes('.mobile')) {
-      formFactor = 'mobile';
+    formFactor = 'mobile';
   }
   return formFactor;
 };
@@ -27,10 +27,10 @@ const _determineFormFactorReport = (fileName) => {
 const _readReportDirectory = (directoryPath) => {
   let files;
   try {
-      files = fs.readdirSync(directoryPath);
+    files = fs.readdirSync(directoryPath);
   } catch (e) {
-      console.error(e);
-      return false;
+    console.error(e);
+    return false;
   }
   return files;
 };
@@ -40,15 +40,22 @@ const _readReportDirectory = (directoryPath) => {
  *
  * @param {string} timestamp
  * @param {string} directoryPath
+ * @param {string} formFactor
  * @returns an array of write streams
  */
-const _createWriteStreams = (timestamp, directoryPath) => {
+const _createWriteStreams = (timestamp, directoryPath, formFactor) => {
   const desktopAggregateReportName = timestamp + '_desktop_aggregateReport.csv';
   const mobileAggregateReportName = timestamp + '_mobile_aggregateReport.csv';
   let desktopAggregatePath = path.join(directoryPath, desktopAggregateReportName);
   let mobileAggregatePath = path.join(directoryPath, mobileAggregateReportName);
-  let desktopWriteStream = fs.createWriteStream(desktopAggregatePath, { flags: 'a', autoClose: false });
-  let mobileWriteStream = fs.createWriteStream(mobileAggregatePath, { flags: 'a', autoClose: false });
+  let desktopWriteStream;
+  let mobileWriteStream;
+  if (formFactor === 'desktop' || formFactor === 'all') {
+    desktopWriteStream = fs.createWriteStream(desktopAggregatePath, { flags: 'a', autoClose: false });
+  }
+  if (formFactor === 'mobile' || formFactor === 'all') {
+    mobileWriteStream = fs.createWriteStream(mobileAggregatePath, { flags: 'a', autoClose: false });
+  }
   return [desktopWriteStream, mobileWriteStream];
 };
 
@@ -62,13 +69,11 @@ const _createWriteStreams = (timestamp, directoryPath) => {
  */
 const _writeDesktopCSVStream = (isFirstDesktopReport, desktopWriteStream, fileContents) => {
   if (isFirstDesktopReport) {
-      desktopWriteStream.write(fileContents + '\n');
-      console.log("appending to desktop");
-      isFirstDesktopReport = false;
+    desktopWriteStream.write(fileContents + '\n');
+    isFirstDesktopReport = false;
   } else {
-      let newContents = fileContents.split('\n').slice(1).join('\n');
-      console.log("appending to desktop");
-      desktopWriteStream.write(newContents + '\n');
+    let newContents = fileContents.split('\n').slice(1).join('\n');
+    desktopWriteStream.write(newContents + '\n');
   }
   return isFirstDesktopReport;
 };
@@ -83,13 +88,11 @@ const _writeDesktopCSVStream = (isFirstDesktopReport, desktopWriteStream, fileCo
 */
 const _writeMobileCSVStream = (isFirstMobileReport, mobileWriteStream, fileContents) => {
   if (isFirstMobileReport) {
-      mobileWriteStream.write(fileContents + '\n');
-      console.log("appending to mobile");
-      isFirstMobileReport = false;
+    mobileWriteStream.write(fileContents + '\n');
+    isFirstMobileReport = false;
   } else {
-      let newContents = fileContents.split('\n').slice(1).join('\n');
-      console.log("appending to mobile");
-      mobileWriteStream.write(newContents + '\n');
+    let newContents = fileContents.split('\n').slice(1).join('\n');
+    mobileWriteStream.write(newContents + '\n');
   }
   return isFirstMobileReport;
 };
@@ -106,15 +109,15 @@ const _processCSVFiles = (files, directoryPath, desktopWriteStream, mobileWriteS
   let isFirstDesktopReport = true;
   let isFirstMobileReport = true;
   files.forEach(fileName => {
-      let filePath = path.join(directoryPath, fileName);
-      let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
-      let formFactor = _determineFormFactorReport(fileName);
-      if (formFactor === 'desktop') {
-          isFirstDesktopReport = _writeDesktopCSVStream(isFirstDesktopReport, desktopWriteStream, fileContents);
-      }
-      if (formFactor === 'mobile') {
-          isFirstMobileReport = _writeMobileCSVStream(isFirstMobileReport, mobileWriteStream, fileContents);
-      }
+    let filePath = path.join(directoryPath, fileName);
+    let fileContents = fs.readFileSync(filePath, { encoding: 'utf-8' });
+    let formFactor = _determineFormFactorReport(fileName);
+    if (formFactor === 'desktop' && desktopWriteStream) {
+      isFirstDesktopReport = _writeDesktopCSVStream(isFirstDesktopReport, desktopWriteStream, fileContents);
+    }
+    if (formFactor === 'mobile' && mobileWriteStream) {
+      isFirstMobileReport = _writeMobileCSVStream(isFirstMobileReport, mobileWriteStream, fileContents);
+    }
 
   });
 };
@@ -131,12 +134,12 @@ const _processCSVFiles = (files, directoryPath, desktopWriteStream, mobileWriteS
 const parallelLimit = async (funcList, limit = 4) => {
   let inFlight = new Set();
   return funcList.map(async (func, i) => {
-      while (inFlight.size >= limit) {
-          await Promise.race(inFlight);
-      }
-      inFlight.add(func);
-      await func;
-      inFlight.delete(func);
+    while (inFlight.size >= limit) {
+      await Promise.race(inFlight);
+    }
+    inFlight.add(func);
+    await func;
+    inFlight.delete(func);
   });
 };
 
@@ -152,33 +155,33 @@ const createFileTime = () => {
 
 const _determineURLs = (urls, domainRoot) => {
   urls.forEach(url => {
-      if (!url.startsWith('https://') && !url.startsWith('http://')) {
-          url = 'https://' + url;
-      }
-      domainRoot.push(new URL(url));
+    if (!url.startsWith('https://') && !url.startsWith('http://')) {
+      url = 'https://' + url;
+    }
+    domainRoot.push(new URL(url));
   });
 };
 
 const _parseProgramURLs = (program) => {
   let domainRoot;
   if (program.url === undefined) {
-      throw new Error('No URL given, quitting!');
+    throw new Error('No URL given, quitting!');
   }
   if (Array.isArray(program.url)) {
-      domainRoot = [];
-      _determineURLs(program.url, domainRoot);
+    domainRoot = [];
+    _determineURLs(program.url, domainRoot);
   } else {
-      if (!program.url.startsWith('https://') && !program.url.startsWith('http://')) {
-          program.url = 'https://' + program.url;
-      }
-      domainRoot = new URL(program.url);
+    if (!program.url.startsWith('https://') && !program.url.startsWith('http://')) {
+      program.url = 'https://' + program.url;
+    }
+    domainRoot = new URL(program.url);
   }
   return domainRoot;
 };
 
 const _setupCrawlerConfig = (simpleCrawler, program) => {
   for (let key in simpleCrawlerConfig) {
-      simpleCrawler[key] = simpleCrawlerConfig[key];
+    simpleCrawler[key] = simpleCrawlerConfig[key];
   }
   simpleCrawler.ignoreWWWDomain = true;
   simpleCrawler.respectRobotsTxt = program.respect;
@@ -186,64 +189,95 @@ const _setupCrawlerConfig = (simpleCrawler, program) => {
 
 const _populateURLArray = (domainRoot, simpleCrawler, urlList) => {
   if (domainRoot.length > 1) {
-      domainRoot.forEach(root => {
-          if (!simpleCrawler.queue.includes(root)) {
-              simpleCrawler.domainWhitelist.push(root.hostname);
-              simpleCrawler.queueURL(root.href);
-          }
-      });
+    domainRoot.forEach(root => {
+      if (!simpleCrawler.queue.includes(root)) {
+        simpleCrawler.domainWhitelist.push(root.hostname);
+        simpleCrawler.queueURL(root.href);
+      }
+    });
   } else {
-      urlList.push(domainRoot[0].href);
+    urlList.push(domainRoot[0].href);
   }
 };
 
 const _populateCrawledURLList = (isDomainRootAnArray, domainRoot, simpleCrawler, urlList) => {
   if (isDomainRootAnArray) {
-      _populateURLArray(domainRoot, simpleCrawler, urlList);
+    _populateURLArray(domainRoot, simpleCrawler, urlList);
   } else {
-      urlList.push(domainRoot.href);
+    urlList.push(domainRoot.href);
   }
 };
 
 const _determineResultingFilePath = (opts, filePath, tempFilePath, replacedUrl) => {
   if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
-      filePath = path.join(tempFilePath, replacedUrl + '.desktop.report.' + opts.output);
+    filePath = path.join(tempFilePath, replacedUrl + '.desktop.report.' + opts.output);
   } else {
-      filePath = path.join(tempFilePath, replacedUrl + '.mobile.report.' + opts.output);
+    filePath = path.join(tempFilePath, replacedUrl + '.mobile.report.' + opts.output);
   }
   return filePath;
 };
 
 const _writeReportResultFile = (filePath, report, opts, currentUrl, tempFilePath) => {
   fs.writeFile(filePath, report, {
-      encoding: 'utf-8'
+    encoding: 'utf-8'
   }, (err) => {
-      if (err)
-          throw err;
-      if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
-          console.log('Wrote desktop report: ', currentUrl, 'at: ', tempFilePath);
-      } else {
-          console.log('Wrote mobile report: ', currentUrl, 'at: ', tempFilePath);
-      }
+    if (err)
+      throw err;
+    if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
+      console.log('Wrote desktop report: ', currentUrl, 'at: ', tempFilePath);
+    } else {
+      console.log('Wrote mobile report: ', currentUrl, 'at: ', tempFilePath);
+    }
   });
 };
+
+const _printNumberOfReports = (formFactor, urlList) => {
+  if (formFactor !== 'all') {
+    console.log(`Generating ${urlList.length} reports!`);
+  } else {
+    console.log(`Generating ${urlList.length * 2} reports!`);
+  }
+}
+
+const _closeWriteStreams = (mobileWriteStream, desktopWriteStream) => {
+  if (desktopWriteStream) {
+    desktopWriteStream.close();
+  }
+  if (mobileWriteStream) {
+    mobileWriteStream.close();
+  }
+}
+const _waitForStreamsToClose = async (mobileWriteStream, desktopWriteStream) => {
+  if (desktopWriteStream) {
+    let desktopClosed = new Promise((resolve) => {
+      desktopWriteStream.on("close", () => resolve(true));
+    });
+    await desktopClosed;
+  }
+  if (mobileWriteStream) {
+    let mobileClosed = new Promise((resolve) => {
+      mobileWriteStream.on("close", () => resolve(true));
+    });
+    await mobileClosed;
+  }
+}
 
 /**
  *  Opens generated reports in your preferred browser as an explorable list
  *  @param {Number} port Port used by Express
  */
 const openReports = (port) => {
-    const express = require('express');
-    const serveIndex = require('serve-index');
-    const app = express();
-    try {
-        app.use(express.static('lighthouse'), serveIndex('lighthouse', { 'icons': true }));
-        app.listen(port);
-        open('http://localhost:' + port);
-        return true;
-    } catch (e) {
-        throw e;
-    }
+  const express = require('express');
+  const serveIndex = require('serve-index');
+  const app = express();
+  try {
+    app.use(express.static('lighthouse'), serveIndex('lighthouse', { 'icons': true }));
+    app.listen(port);
+    open('http://localhost:' + port);
+    return true;
+  } catch (e) {
+    throw e;
+  }
 };
 
 /**
@@ -252,17 +286,17 @@ const openReports = (port) => {
  * @param {string} tempFilePath
  */
 const openReportsWithoutServer = (tempFilePath) => {
-    let filePath = tempFilePath;
-    /* istanbul ignore next */
-    if (fs.existsSync(filePath)) {
-        fs.readdirSync(filePath).forEach(file => {
-            console.log('Opening: ', file);
-            let tempPath = path.join(tempFilePath, file);
-            open(tempPath);
-        });
-        return true;
-    }
-    return false;
+  let filePath = tempFilePath;
+  /* istanbul ignore next */
+  if (fs.existsSync(filePath)) {
+    fs.readdirSync(filePath).forEach(file => {
+      console.log('Opening: ', file);
+      let tempPath = path.join(tempFilePath, file);
+      open(tempPath);
+    });
+    return true;
+  }
+  return false;
 };
 
 module.exports = {
@@ -281,6 +315,9 @@ module.exports = {
   _populateCrawledURLList,
   _determineResultingFilePath,
   _writeReportResultFile,
+  _printNumberOfReports,
+  _waitForStreamsToClose,
+  _closeWriteStreams,
   openReports,
   openReportsWithoutServer
 };
