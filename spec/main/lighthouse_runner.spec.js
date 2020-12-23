@@ -18,13 +18,12 @@ const removeAggregateFile = (aggregatePath, formFactor) => {
 };
 
 
-describe('aggregateCSVReports', () => {
+describe('aggregateCSVReportsZero', () => {
   it('should only create the mobile report', async () => {
     let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM');
     let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_desktop_aggregateReport.csv');
     let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_mobile_aggregateReport.csv');
     removeAggregateFile(testDesktopAggregatePath, desktopFormFactor);
-    removeAggregateFile(testMobileAggregatePath, mobileFormFactor);
     let runner = require('../../lighthouse_runner');
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
     let result = await runner.aggregateCSVReports(testPath, mobileFormFactor);
@@ -37,12 +36,14 @@ describe('aggregateCSVReports', () => {
     
   });
 
+});
+
+describe("aggregateCSVReportsOne", () => {
   it('should only create the desktop report', async () => {
     let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_17_2020___7_17_07__PM');
     let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_17_2020___7_17_07__PM', '7_17_2020___7_17_07__PM_desktop_aggregateReport.csv');
     let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_17_05__PM', '7_17_2020___7_17_07__PM_mobile_aggregateReport.csv');
     removeAggregateFile(testDesktopAggregatePath, desktopFormFactor);
-    removeAggregateFile(testMobileAggregatePath, mobileFormFactor);
     let runner = require('../../lighthouse_runner');
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
     let result = await runner.aggregateCSVReports(testPath, desktopFormFactor);
@@ -53,7 +54,6 @@ describe('aggregateCSVReports', () => {
     let mobileReportExists = fs.existsSync(testMobileAggregatePath);
     expect(mobileReportExists).toBeFalse();
   });
-
 });
 
 describe("aggregateCSVReportsTwo", () => {
