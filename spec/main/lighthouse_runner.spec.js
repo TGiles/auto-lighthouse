@@ -1,35 +1,76 @@
 const path = require('path');
 const fs = require('fs');
 
+const allFormFactors = 'all';
+const mobileFormFactor = 'mobile';
+const desktopFormFactor = 'desktop';
+
+const removeAggregateFile = (aggregatePath, formFactor) => {
+  try {
+    fs.unlinkSync(aggregatePath);
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      console.log(`${formFactor} aggregate report was already deleted!`);
+    } else {
+      console.error(e);
+    }
+  }
+};
+
 
 describe('aggregateCSVReports', () => {
-  it('should create two aggregate reports', async () => {
+  beforeEach(() => {
+    let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_desktop_aggregateReport.csv');
+    let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_mobile_aggregateReport.csv');
+    removeAggregateFile(testDesktopAggregatePath, desktopFormFactor);
+    removeAggregateFile(testMobileAggregatePath, mobileFormFactor);
+  });
+  it('should only create the mobile report', async () => {
+    let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_desktop_aggregateReport.csv');
+    let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_mobile_aggregateReport.csv');
+    let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM');
+    let runner = require('../../lighthouse_runner');
+    spyOn(runner, 'aggregateCSVReports').and.callThrough();
+    let result = await runner.aggregateCSVReports(testPath, mobileFormFactor);
+    expect(result).toBeTrue();
+    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath, mobileFormFactor);
+    let mobileReportExists = fs.existsSync(testMobileAggregatePath);
+    expect(mobileReportExists).toBeTrue();
+    let desktopReportExists = fs.existsSync(testDesktopAggregatePath);
+    expect(desktopReportExists).toBeFalse();
+    
+  });
+
+  it('should only create the desktop report', async () => {
     let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM');
     let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_desktop_aggregateReport.csv');
     let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_mobile_aggregateReport.csv');
-    try {
-      fs.unlinkSync(testDesktopAggregatePath);
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        console.log('Desktop aggregate report was already deleted!');
-      } else {
-        console.error(e);
-      }
-    }
-    try {
-      fs.unlinkSync(testMobileAggregatePath);
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        console.log('Mobile aggregate report was already deleted!');
-      } else {
-        console.error(e);
-      }
-    }
     let runner = require('../../lighthouse_runner');
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
-    let result = await runner.aggregateCSVReports(testPath);
+    let result = await runner.aggregateCSVReports(testPath, desktopFormFactor);
     expect(result).toBeTrue();
-    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath);
+    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath, desktopFormFactor);
+    let desktopReportExists = fs.existsSync(testDesktopAggregatePath);
+    expect(desktopReportExists).toBeTrue();
+    let mobileReportExists = fs.existsSync(testMobileAggregatePath);
+    expect(mobileReportExists).toBeFalse();
+  });
+
+});
+
+describe("aggregateCSVReportsTwo", () => {
+  it('should create two aggregate reports', async () => {
+    // * Needed to create a separate directory since Node was holding onto file names which caused EPERM errors
+    let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_16_2020___6_16_06__PM');
+    let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_16_2020___6_16_06__PM', '7_16_2020___6_16_06__PM_desktop_aggregateReport.csv');
+    let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_16_2020___6_16_06__PM', '7_16_2020___6_16_06__PM_mobile_aggregateReport.csv');
+    removeAggregateFile(testDesktopAggregatePath, desktopFormFactor);
+    removeAggregateFile(testMobileAggregatePath, mobileFormFactor);
+    let runner = require('../../lighthouse_runner');
+    spyOn(runner, 'aggregateCSVReports').and.callThrough();
+    let result = await runner.aggregateCSVReports(testPath, allFormFactors);
+    expect(result).toBeTrue();
+    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(testPath, allFormFactors);
     let desktopReportExists = fs.existsSync(testDesktopAggregatePath);
     expect(desktopReportExists).toBeTrue();
     let mobileReportExists = fs.existsSync(testMobileAggregatePath);
@@ -40,11 +81,12 @@ describe('aggregateCSVReports', () => {
     const fakePath = 'testFakePath';
     let runner = require('../../lighthouse_runner');
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
-    let result = await runner.aggregateCSVReports(fakePath);
-    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(fakePath);
+    let result = await runner.aggregateCSVReports(fakePath, allFormFactors);
+    expect(runner.aggregateCSVReports).toHaveBeenCalledWith(fakePath, allFormFactors);
     expect(result).toBeFalse();
   });
 });
+
 describe("main", () => {
   it('was called once', () => {
     let lighthouse_runner = require("../../lighthouse_runner");
