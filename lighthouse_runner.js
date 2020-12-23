@@ -231,7 +231,7 @@ const aggregateCSVReports = async (directoryPath, formFactor) => {
     console.error(e);
     didAggregateSuccessfully = false;
   } finally {
-    _closeWriteStreams()
+    _closeWriteStreams();
   }
 
   console.log("Waiting for streams to close!");
