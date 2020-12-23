@@ -6,7 +6,7 @@ const package = require('./package.json');
 const program = new commander.Command();
 program.version(package.version);
 program
-    .option('-u, --url <urls>', 'starting valid url(s) for auto-lighthouse')
+    .option('-u, --url <urls...>', 'starting valid url(s) for auto-lighthouse')
     .option('--format <mode>', 'output format of Lighthouse reports. Allowed values: html, json, csv.', 'html')
     .option('-e, --express <open>', 'flag for auto opening reports in local express server. Allowed values: true, false.')
     .option('-t, --threads <threads>', 'Number of threads used. Defaults to all threads.')
