@@ -23,7 +23,6 @@ describe('aggregateCSVReportsZero', () => {
     let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM');
     let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_desktop_aggregateReport.csv');
     let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_mobile_aggregateReport.csv');
-    removeAggregateFile(testDesktopAggregatePath, desktopFormFactor);
     let runner = require('../../lighthouse_runner');
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
     let result = await runner.aggregateCSVReports(testPath, mobileFormFactor);
@@ -43,7 +42,6 @@ describe("aggregateCSVReportsOne", () => {
     let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_17_2020___7_17_07__PM');
     let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_17_2020___7_17_07__PM', '7_17_2020___7_17_07__PM_desktop_aggregateReport.csv');
     let testMobileAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_17_05__PM', '7_17_2020___7_17_07__PM_mobile_aggregateReport.csv');
-    removeAggregateFile(testDesktopAggregatePath, desktopFormFactor);
     let runner = require('../../lighthouse_runner');
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
     let result = await runner.aggregateCSVReports(testPath, desktopFormFactor);
