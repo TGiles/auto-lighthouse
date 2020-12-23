@@ -15,10 +15,10 @@ program
 
 program.parse(process.argv);
 if (program.rawArgs.length === 2) {
-    program.help();
+  program.help();
 }
 else {
-    lighthouseRunner.main(program);
+  lighthouseRunner.main(program);
 }
 
 module.exports = {
