@@ -210,6 +210,7 @@ const complete = (urlList, autoOpen) => {
  * One aggregate report is for desktop data and the other report is for mobile data.
  *
  * @param {string} directoryPath
+ * @param {string} formFactor
  * @returns {boolean} didAggregateSuccessfully
  */
 const aggregateCSVReports = async (directoryPath, formFactor) => {
