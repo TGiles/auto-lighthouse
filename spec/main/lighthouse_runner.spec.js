@@ -18,7 +18,7 @@ const removeAggregateFile = (aggregatePath, formFactor) => {
 };
 
 
-describe('aggregateCSVReportsZero', () => {
+xdescribe('aggregateCSVReportsZero', () => {
   it('should only create the mobile report', async () => {
     let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM');
     let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_15_2020___6_15_05__PM', '7_15_2020___6_15_05__PM_desktop_aggregateReport.csv');
@@ -37,7 +37,7 @@ describe('aggregateCSVReportsZero', () => {
 
 });
 
-describe("aggregateCSVReportsOne", () => {
+xdescribe("aggregateCSVReportsOne", () => {
   it('should only create the desktop report', async () => {
     let testPath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_17_2020___7_17_07__PM');
     let testDesktopAggregatePath = path.join(__dirname, '../', 'helpers', 'lighthouse', '7_17_2020___7_17_07__PM', '7_17_2020___7_17_07__PM_desktop_aggregateReport.csv');
