@@ -220,7 +220,6 @@ const aggregateCSVReports = async (directoryPath, formFactor) => {
   if (!files) {
     return false;
   }
-  debugger;
   let [desktopWriteStream, mobileWriteStream] = _createWriteStreams(timestamp, directoryPath, formFactor);
   const aggregateName = "_aggregateReport";
   files = files.filter(fileName => !fileName.includes(aggregateName));
