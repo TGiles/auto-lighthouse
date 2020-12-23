@@ -120,6 +120,7 @@ describe("main", () => {
     expect(result).toBeTruthy();
   });
   it('should not throw an error when the URL is an array of two or more', () => {
+    debugger;
     let runner = require('../../lighthouse_runner');
     let mockProgram = {
       url: ['tgiles.github.io', 'https://blankslate.io'],
@@ -129,6 +130,7 @@ describe("main", () => {
 
     let result = runner.main(mockProgram);
     expect(runner.main).toHaveBeenCalledWith(mockProgram);
+    expect(result.queue.length).toEqual(2);
     expect(result).toBeTruthy();
   });
 });
