@@ -11,6 +11,7 @@ program
     .option('-e, --express <open>', 'flag for auto opening reports in local express server. Allowed values: true, false.')
     .option('-t, --threads <threads>', 'Number of threads used. Defaults to all threads.')
     .option('-p, --port <port>', 'port for local express server', 9000)
+    .option('-v, --verbose', 'prints out verbose logs')
     .option('--respectRobots <respect>', 'flag for respecting all robots.txt rules', true);
 
 program.parse(process.argv);

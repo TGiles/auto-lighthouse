@@ -259,6 +259,9 @@ const _parseProgramParameters = (program) => {
   } else {
     autoOpen = program.express;
   }
+  if(!program.verbose) {
+    console.info = function () {};
+  }
 };
 
 
