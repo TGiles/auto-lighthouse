@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const open = require('open');
+const cliProgress = require('cli-progress');
 const simpleCrawlerConfig = require('./config/simpleCrawler');
 /**
  *  Determines the form factor of the given Lighthouse report
@@ -99,13 +100,14 @@ const _writeMobileCSVStream = (isFirstMobileReport, mobileWriteStream, fileConte
 
 /**
  * Process the CSV reports and write their data to the respective write stream.
- *
- * @param {string[]} files
- * @param {string} directoryPath
- * @param {fs.WriteStream} desktopWriteStream
- * @param {fs.WriteStream} mobileWriteStream
+ * @param {Object} processCSVObject 
+ * @param {string[]} processCSVObject.files
+ * @param {string} processCSVObject.directoryPath
+ * @param {fs.WriteStream | undefined} processCSVObject.desktopWriteStream
+ * @param {fs.WriteStream | undefined} processCSVObject.mobileWriteStream
  */
-const _processCSVFiles = (files, directoryPath, desktopWriteStream, mobileWriteStream) => {
+const _processCSVFiles = (processCSVObject) => {
+  const {files, directoryPath, desktopWriteStream, mobileWriteStream, progressBar} = processCSVObject;
   let isFirstDesktopReport = true;
   let isFirstMobileReport = true;
   files.forEach(fileName => {
@@ -114,9 +116,11 @@ const _processCSVFiles = (files, directoryPath, desktopWriteStream, mobileWriteS
     let formFactor = _determineFormFactorReport(fileName);
     if (formFactor === 'desktop' && desktopWriteStream) {
       isFirstDesktopReport = _writeDesktopCSVStream(isFirstDesktopReport, desktopWriteStream, fileContents);
+      progressBar.increment();
     }
     if (formFactor === 'mobile' && mobileWriteStream) {
       isFirstMobileReport = _writeMobileCSVStream(isFirstMobileReport, mobileWriteStream, fileContents);
+      progressBar.increment();
     }
 
   });
@@ -224,9 +228,9 @@ const _writeReportResultFile = (filePath, report, opts, currentUrl, tempFilePath
     if (err)
       throw err;
     if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
-      console.log('Wrote desktop report: ', currentUrl, 'at: ', tempFilePath);
+      console.info('\n Wrote desktop report: ', currentUrl, 'at: ', tempFilePath);
     } else {
-      console.log('Wrote mobile report: ', currentUrl, 'at: ', tempFilePath);
+      console.info('\n Wrote mobile report: ', currentUrl, 'at: ', tempFilePath);
     }
   });
 };
@@ -236,6 +240,14 @@ const _printNumberOfReports = (formFactor, urlList) => {
     console.log(`Generating ${urlList.length} reports!`);
   } else {
     console.log(`Generating ${urlList.length * 2} reports!`);
+  }
+}
+
+const _getNumberOfReports = (formFactor, urlList) => {
+  if (formFactor !== 'all') {
+    return urlList.length;
+  } else {
+    return urlList.length * 2;
   }
 }
 
@@ -261,6 +273,31 @@ const _waitForStreamsToClose = async (mobileWriteStream, desktopWriteStream) => 
     await mobileClosed;
   }
 }
+
+const _setupProgressBarAggregateCsv = (desktopWriteStream, mobileWriteStream, files) => {
+  console.log('Aggregating reports!');
+  let progressBar = new cliProgress.SingleBar({
+    format: 'Aggregate progress {bar} {percentage}% | ETA: {eta}s | {value}/{total} | time elapsed: {duration}s',
+    forceRedraw: true
+  }, cliProgress.Presets.shades_classic);
+  if (desktopWriteStream && mobileWriteStream) {
+    progressBar.start(files.length, 0);
+  } else {
+    progressBar.start(files.length / 2, 0);
+  }
+  return progressBar;
+};
+
+const _setupProgressBarReportCreation = (formFactor, urlList) => {
+  let progressBar = new cliProgress.SingleBar({
+    format: 'Report creation progress {bar} {percentage}% | ETA: {eta}s | {value}/{total} | time elapsed: {duration}s',
+    forceRedraw: true
+  }, cliProgress.Presets.shades_classic);
+  let numberOfReports = _getNumberOfReports(formFactor, urlList);
+  console.log("Processing reports!");
+  progressBar.start(numberOfReports, 0);
+  return progressBar;
+};
 
 /**
  *  Opens generated reports in your preferred browser as an explorable list
@@ -318,6 +355,9 @@ module.exports = {
   _printNumberOfReports,
   _waitForStreamsToClose,
   _closeWriteStreams,
+  _getNumberOfReports,
+  _setupProgressBarAggregateCsv,
+  _setupProgressBarReportCreation,
   openReports,
   openReportsWithoutServer
 };

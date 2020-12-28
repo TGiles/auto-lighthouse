@@ -5,11 +5,15 @@ const chromeLauncher = require('chrome-launcher');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const Spinner = require('cli-spinner').Spinner;
+Spinner.setDefaultSpinnerDelay(100);
 let autoOpen = false;
 let port;
 let outputMode;
 let threads;
 let formFactor;
+let _spinner;
+let progressBar;
 const runnerConfig = require('./config/runnerConfiguration');
 const allowedList = require('./allowedList').allowedList;
 const {
@@ -27,7 +31,10 @@ const {
   _waitForStreamsToClose,
   openReports,
   openReportsWithoutServer,
-  _closeWriteStreams
+  _closeWriteStreams,
+  _getNumberOfReports,
+  _setupProgressBarReportCreation,
+  _setupProgressBarAggregateCsv
 } = require('./helpers');
 const {
   _opts,
@@ -123,6 +130,7 @@ const processResults = (processObj) => {
   filePath = _determineResultingFilePath(opts, filePath, tempFilePath, replacedUrl);
   // https://stackoverflow.com/questions/34811222/writefile-no-such-file-or-directory
   _writeReportResultFile(filePath, report, opts, currentUrl, tempFilePath);
+  progressBar.increment();
 };
 
 /**
@@ -138,18 +146,18 @@ const queueAdd = (queueItem, urlList) => {
 
   if (isValidWebPage) {
     urlList.push(queueItem.url);
-    console.log(`Pushed: ${queueItem.url}`);
+    console.info(`Pushed: ${queueItem.url}`);
 
     // if end of the path is /xyz/, this is still a valid path
   } if (endOfURLPath.length === 0) {
     urlList.push(queueItem.url);
-    console.log(`Pushed: ${queueItem.url}`);
+    console.info(`\n Pushed: ${queueItem.url}`);
   }
   else {
     // if uri path is clean/no file path
     if (!endOfURLPath.includes('.')) {
       urlList.push(queueItem.url);
-      console.log(`Pushed: ${queueItem.url}`);
+      console.info(`\n Pushed: ${queueItem.url}`);
     }
   }
 };
@@ -165,7 +173,7 @@ const complete = (urlList, autoOpen) => {
   ? https://github.com/GoogleChrome/lighthouse/tree/master/lighthouse-core/config
   ? for more information on config options for lighthouse
   */
-
+  _spinner.stop(true);
   let opts = _opts;
   opts.output = outputMode;
   let desktopOpts = _desktopOpts;
@@ -176,12 +184,14 @@ const complete = (urlList, autoOpen) => {
   if (!fs.existsSync(tempFilePath)) {
     fs.mkdirSync(tempFilePath, { recursive: true });
   }
+  _printNumberOfReports(formFactor, urlList);
+  progressBar = _setupProgressBarReportCreation(formFactor, urlList);
+
   /* 
   async start function
   This prevents the CPU from getting bogged down when Lighthouse tries to run
   a report on every URL in the URL list
   */
-  _printNumberOfReports(formFactor, urlList);
   (async () => {
     try {
       let combinedOpts = [desktopOpts, opts];
@@ -191,7 +201,8 @@ const complete = (urlList, autoOpen) => {
         ],
         threads);
       await Promise.all(promises);
-      console.log('Done with reports!');
+      progressBar.stop();
+      console.log('Done creating reports!');
       if (outputMode === 'csv') {
         aggregateCSVReports(tempFilePath, formFactor);
       }
@@ -222,21 +233,31 @@ const aggregateCSVReports = async (directoryPath, formFactor) => {
     return false;
   }
   let [desktopWriteStream, mobileWriteStream] = _createWriteStreams(timestamp, directoryPath, formFactor);
+  let progressBar = _setupProgressBarAggregateCsv(desktopWriteStream, mobileWriteStream, files);
   const aggregateName = "_aggregateReport";
   files = files.filter(fileName => !fileName.includes(aggregateName));
+  let processCSVObject = {
+    files,
+    directoryPath,
+    desktopWriteStream,
+    mobileWriteStream,
+    progressBar
+  }
   try {
-    _processCSVFiles(files, directoryPath, desktopWriteStream, mobileWriteStream);
+    // _processCSVFiles(files, directoryPath, desktopWriteStream, mobileWriteStream, progressBar);
+    _processCSVFiles(processCSVObject);
   }
   catch (e) {
     console.error(e);
     didAggregateSuccessfully = false;
   } finally {
+    progressBar.stop();
     _closeWriteStreams();
   }
 
-  console.log("Waiting for streams to close!");
+  console.info("Waiting for streams to close!");
   await _waitForStreamsToClose();
-  console.log("Streams closed!");
+  console.info("Streams closed!");
   return didAggregateSuccessfully;
 }
 
@@ -258,6 +279,9 @@ const _parseProgramParameters = (program) => {
     autoOpen = runnerConfig.autoOpenReports;
   } else {
     autoOpen = program.express;
+  }
+  if(!program.verbose) {
+    console.info = function () {};
   }
 };
 
@@ -313,7 +337,9 @@ function main(program) {
   } else {
     console.log('Not automatically opening reports when done!');
   }
-  console.log('Starting simple crawler on', simpleCrawler.host + '!');
+  console.info('Starting simple crawler on', simpleCrawler.host + '!');
+  _spinner = new Spinner('Crawling domains... %s');
+  _spinner.start();
   return simpleCrawler.start();
 }
 
