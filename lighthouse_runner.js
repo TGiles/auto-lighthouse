@@ -242,7 +242,7 @@ const aggregateCSVReports = async (directoryPath, formFactor) => {
     desktopWriteStream,
     mobileWriteStream,
     progressBar
-  }
+  };
   try {
     // _processCSVFiles(files, directoryPath, desktopWriteStream, mobileWriteStream, progressBar);
     _processCSVFiles(processCSVObject);
@@ -259,7 +259,7 @@ const aggregateCSVReports = async (directoryPath, formFactor) => {
   await _waitForStreamsToClose();
   console.info("Streams closed!");
   return didAggregateSuccessfully;
-}
+};
 
 
 const _parseProgramParameters = (program) => {
