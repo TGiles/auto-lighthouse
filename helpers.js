@@ -213,7 +213,7 @@ const _populateCrawledURLList = (isDomainRootAnArray, domainRoot, simpleCrawler,
 };
 
 const _determineResultingFilePath = (opts, filePath, tempFilePath, replacedUrl) => {
-  if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
+  if (opts.formFactor && opts.formFactor === 'desktop') {
     filePath = path.join(tempFilePath, replacedUrl + '.desktop.report.' + opts.output);
   } else {
     filePath = path.join(tempFilePath, replacedUrl + '.mobile.report.' + opts.output);
@@ -227,7 +227,7 @@ const _writeReportResultFile = (filePath, report, opts, currentUrl, tempFilePath
   }, (err) => {
     if (err)
       throw err;
-    if (opts.emulatedFormFactor && opts.emulatedFormFactor === 'desktop') {
+    if (opts.formFactor && opts.formFactor === 'desktop') {
       console.info('\n Wrote desktop report: ', currentUrl, 'at: ', tempFilePath);
     } else {
       console.info('\n Wrote mobile report: ', currentUrl, 'at: ', tempFilePath);
