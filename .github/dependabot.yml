@@ -1,0 +1,21 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  reviewers:
+  - TGiles
+  assignees:
+  - TGiles
+  ignore:
+  - dependency-name: open
+    versions:
+    - 8.0.1
+  - dependency-name: urijs
+    versions:
+    - 1.19.6
+  - dependency-name: commander
+    versions:
+    - 7.0.0
