@@ -1,3 +1,13 @@
+* build(deps): bump hosted-git-info from 2.8.4 to 2.8.9 (#242) (1e01adf)
+* build(deps): bump lodash from 4.17.19 to 4.17.21 (#241) (d9fd69b)
+* build(deps-dev): bump release-it from 14.6.1 to 14.6.2 (#240) (9f1b4e8)
+* build(deps): bump open from 8.0.7 to 8.0.8 (#239) (429e292)
+* Upgrade to GitHub-native Dependabot (#238) (d1f7d2a)
+* build(deps): bump open from 8.0.6 to 8.0.7 (#237) (5b575eb)
+* build(deps): bump lighthouse from 7.3.0 to 7.4.0 (#236) (6547ef0)
+* build(deps): bump open from 8.0.5 to 8.0.6 (#235) (b4315e9)
+* build(deps-dev): bump release-it from 14.5.1 to 14.6.1 (#234) (0f81b71)
+
 * fix: fix emulation flags due to Lighthouse v7 update (#233) (4e42b0f)
 * build(deps): bump open from 8.0.4 to 8.0.5 (#232) (c12b0e1)
 * build(deps-dev): bump release-it from 14.5.0 to 14.5.1 (#230) (ee780df)
