@@ -262,25 +262,25 @@ const aggregateCSVReports = async (directoryPath, formFactor) => {
 };
 
 
-const _parseProgramParameters = (program) => {
-  outputMode = program.format;
-  port = program.port;
-  if (program.device === 'mobile' || program.device === 'desktop') {
-    formFactor = program.device;
+const _parseProgramParameters = (options) => {
+  outputMode = options.format;
+  port = options.port;
+  if (options.device === 'mobile' || options.device === 'desktop') {
+    formFactor = options.device;
   } else {
     formFactor = 'all';
   }
-  if (program.threads === undefined) {
+  if (options.threads === undefined) {
     threads = os.cpus().length;
   } else {
-    threads = program.threads;
+    threads = options.threads;
   }
-  if (program.express === undefined) {
+  if (options.express === undefined) {
     autoOpen = runnerConfig.autoOpenReports;
   } else {
-    autoOpen = program.express;
+    autoOpen = options.express;
   }
-  if(!program.verbose) {
+  if(!options.verbose) {
     console.info = function () {};
   }
 };
@@ -324,12 +324,13 @@ const _setupCrawlerEvents = (domainRoot, simpleCrawler, isDomainRootAnArray, url
 function main(program) {
   let domainRoot;
   let simpleCrawler;
-  _parseProgramParameters(program);
-  domainRoot = _parseProgramURLs(program);
+  let programOptions = program.opts();
+  _parseProgramParameters(programOptions);
+  domainRoot = _parseProgramURLs(programOptions);
   let isDomainRootAnArray = Array.isArray(domainRoot);
   let urlList = [];
   simpleCrawler = _setupCrawlerEvents(domainRoot, simpleCrawler, isDomainRootAnArray, urlList);
-  _setupCrawlerConfig(simpleCrawler, program);
+  _setupCrawlerConfig(simpleCrawler, programOptions);
   _populateCrawledURLList(isDomainRootAnArray, domainRoot, simpleCrawler, urlList);
 
   if (autoOpen) {
