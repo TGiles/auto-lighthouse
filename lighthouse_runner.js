@@ -324,7 +324,7 @@ const _setupCrawlerEvents = (domainRoot, simpleCrawler, isDomainRootAnArray, url
 function main(program) {
   let domainRoot;
   let simpleCrawler;
-  let programOptions = program.opts();
+  let programOptions = (program.opts === undefined) ? program : program.opts();
   _parseProgramParameters(programOptions);
   domainRoot = _parseProgramURLs(programOptions);
   let isDomainRootAnArray = Array.isArray(domainRoot);
