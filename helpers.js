@@ -166,29 +166,29 @@ const _determineURLs = (urls, domainRoot) => {
   });
 };
 
-const _parseProgramURLs = (program) => {
+const _parseProgramURLs = (options) => {
   let domainRoot;
-  if (program.url === undefined) {
+  if (options.url === undefined) {
     throw new Error('No URL given, quitting!');
   }
-  if (Array.isArray(program.url)) {
+  if (Array.isArray(options.url)) {
     domainRoot = [];
-    _determineURLs(program.url, domainRoot);
+    _determineURLs(options.url, domainRoot);
   } else {
-    if (!program.url.startsWith('https://') && !program.url.startsWith('http://')) {
-      program.url = 'https://' + program.url;
+    if (!options.url.startsWith('https://') && !options.url.startsWith('http://')) {
+      options.url = 'https://' + options.url;
     }
-    domainRoot = new URL(program.url);
+    domainRoot = new URL(options.url);
   }
   return domainRoot;
 };
 
-const _setupCrawlerConfig = (simpleCrawler, program) => {
+const _setupCrawlerConfig = (simpleCrawler, options) => {
   for (let key in simpleCrawlerConfig) {
     simpleCrawler[key] = simpleCrawlerConfig[key];
   }
   simpleCrawler.ignoreWWWDomain = true;
-  simpleCrawler.respectRobotsTxt = program.respect;
+  simpleCrawler.respectRobotsTxt = options.respect;
 };
 
 const _populateURLArray = (domainRoot, simpleCrawler, urlList) => {
