@@ -13,7 +13,8 @@
     "start": "node cli",
     "release": "release-it",
     "test": "nyc --reporter=html --reporter=text jasmine --random=false",
-    "coverage": "npm run test && node nyc_server"
+    "coverage": "npm run test && node nyc_server",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
