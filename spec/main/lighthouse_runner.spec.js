@@ -222,7 +222,7 @@ describe("openReports", () => {
   });
   it('should only be called when autoOpen is set to true', () => {
     let runner = require('../../lighthouse_runner');
-    spyOn(runner, "openReports");
+    spyOn(runner, "openReports").and.callFake(() => true);
     spyOn(runner, "main").and.callFake((autoOpen) => {
       if (autoOpen) {
         runner.openReports();
@@ -236,7 +236,7 @@ describe("openReports", () => {
   it('return true on success', () => {
     let runner = require('../../lighthouse_runner');
     let port = 8500;
-    spyOn(runner, "openReports").and.callThrough();
+    spyOn(runner, "openReports").and.callFake(() => true);
     let result = runner.openReports(port);
     expect(result).toBeTruthy();
     expect(runner.openReports).toHaveBeenCalledWith(port);
