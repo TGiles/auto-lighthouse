@@ -1,3 +1,5 @@
+## [2.0.4](https://github.com/TGiles/auto-lighthouse/compare/2.0.3...2.0.4) (2021-08-05)
+
 * build(deps-dev): bump @release-it/conventional-changelog (#260) (1ead7ea)
 * build(deps-dev): bump release-it from 14.8.0 to 14.9.0 (#261) (0a01dba)
 * build(deps): bump normalize-url from 4.5.0 to 4.5.1 (#258) (ed90497)

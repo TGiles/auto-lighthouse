@@ -1,6 +1,6 @@
 {
   "name": "auto-lighthouse",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "A CLI for crawling a domain and generating both mobile and desktop reports for each page.",
   "main": "cli.js",
   "engines": {
