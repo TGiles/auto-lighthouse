@@ -1,3 +1,10 @@
+## [2.0.5](https://github.com/TGiles/auto-lighthouse/compare/2.0.4...2.0.5) (2021-11-30)
+
+
+### Bug Fixes
+
+* fix generateReport module path ([1e3d676](https://github.com/TGiles/auto-lighthouse/commit/1e3d67630d73ad2b8a9685fe67b63c97cd8512ca))
+
 ## [2.0.4](https://github.com/TGiles/auto-lighthouse/compare/2.0.3...2.0.4) (2021-08-05)
 
 * build(deps-dev): bump @release-it/conventional-changelog (#260) (1ead7ea)
