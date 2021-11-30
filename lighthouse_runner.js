@@ -1,6 +1,6 @@
 const Crawler = require('simplecrawler');
 const lighthouse = require('lighthouse');
-const generateReport = require('lighthouse/report/report-generator');
+const generateReport = require('lighthouse/report/generator/report-generator');
 const chromeLauncher = require('chrome-launcher');
 const fs = require('fs');
 const path = require('path');
