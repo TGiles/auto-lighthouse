@@ -46,7 +46,7 @@
     "simplecrawler": "^1.1.8"
   },
   "devDependencies": {
-    "@commitlint/cli": "^15.0.0",
+    "@commitlint/cli": "^16.0.0",
     "@commitlint/config-conventional": "^15.0.0",
     "@release-it/conventional-changelog": "^3.0.1",
     "husky": "^7.0.1",
