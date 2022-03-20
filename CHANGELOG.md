@@ -1,6 +1,6 @@
 
 
-# [3.0.0](https://github.com/TGiles/auto-lighthouse/compare/2.0.5...3.0.0) (2022-03-20)
+## [3.0.1](https://github.com/TGiles/auto-lighthouse/compare/3.0.0...3.0.1) (2022-03-20)# [3.0.0](https://github.com/TGiles/auto-lighthouse/compare/2.0.5...3.0.0) (2022-03-20)
 
 
 ### Bug Fixes
