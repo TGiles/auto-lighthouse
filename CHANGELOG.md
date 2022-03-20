@@ -1,4 +1,20 @@
-## [2.0.5](https://github.com/TGiles/auto-lighthouse/compare/2.0.4...2.0.5) (2021-11-30)
+
+
+# [3.0.0](https://github.com/TGiles/auto-lighthouse/compare/2.0.5...3.0.0) (2022-03-20)
+
+
+### Bug Fixes
+
+* check if chrome or chromium is installed before trying to run ([2524887](https://github.com/TGiles/auto-lighthouse/commit/2524887858cdbe3686d956de4997ad77f478703c))
+* throw errors instead of just logging them ([0b82f33](https://github.com/TGiles/auto-lighthouse/commit/0b82f33c2ef46ac9cbd0321a488f33277d3db6ed))
+
+
+* build!: drop node 12 support ([12ff14c](https://github.com/TGiles/auto-lighthouse/commit/12ff14c0de1ad8c49e2fdcfee5e3f7279363c914))
+
+
+### BREAKING CHANGES
+
+* drop support for Node 12## [2.0.5](https://github.com/TGiles/auto-lighthouse/compare/2.0.4...2.0.5) (2021-11-30)
 
 
 ### Bug Fixes
@@ -262,5 +278,3 @@
 ### Features
 
 * Add CLI ([#5](https://github.com/TGiles/auto-lighthouse/issues/5)) ([cc0c180](https://github.com/TGiles/auto-lighthouse/commit/cc0c180))
-
-
