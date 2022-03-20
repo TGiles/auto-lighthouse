@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.3",
-    "@commitlint/config-conventional": "^15.0.0",
+    "@commitlint/config-conventional": "^16.2.1",
     "@release-it/conventional-changelog": "^4.2.2",
     "husky": "^7.0.1",
     "jasmine": "3.10.0",
