@@ -44,6 +44,8 @@ describe("aggregateCSVReportsTwo", () => {
     const fakePath = 'testFakePath';
     let runner = require('../../lighthouse_runner');
     spyOn(runner, 'aggregateCSVReports').and.callThrough();
+    // Disable console error logging so test output isn't as noisy
+    console.error = function() {};
     let result = await runner.aggregateCSVReports(fakePath, allFormFactors);
     expect(runner.aggregateCSVReports).toHaveBeenCalledWith(fakePath, allFormFactors);
     expect(result).toBeFalse();
