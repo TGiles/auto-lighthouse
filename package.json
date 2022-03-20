@@ -4,7 +4,7 @@
   "description": "A CLI for crawling a domain and generating both mobile and desktop reports for each page.",
   "main": "cli.js",
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "bin": {
     "auto-lighthouse": "./cli.js"
