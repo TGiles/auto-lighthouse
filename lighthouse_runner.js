@@ -316,11 +316,26 @@ const _setupCrawlerEvents = (domainRoot, simpleCrawler, isDomainRootAnArray, url
 };
 
 /**
+ * Determines if the chrome-launcher package can find an installed Chromium/Chrome executable.
+ *
+ */
+const determineIfChromeIsInstalled = () => {
+  try {
+    chromeLauncher.getChromePath();
+   }
+   catch (e) {
+     console.error("You need to install Chromium or Chrome in order to use auto-lighthouse.");
+     throw e;
+   }
+}
+
+/**
  * Main function.
  * This kicks off the Lighthouse Runner process
  * @param {commander} program - An instance of a Commander.js program
  */
 function main(program) {
+  determineIfChromeIsInstalled();
   let domainRoot;
   let simpleCrawler;
   let programOptions = (program.opts === undefined) ? program : program.opts();
