@@ -244,7 +244,6 @@ const aggregateCSVReports = async (directoryPath, formFactor) => {
     progressBar
   };
   try {
-    // _processCSVFiles(files, directoryPath, desktopWriteStream, mobileWriteStream, progressBar);
     _processCSVFiles(processCSVObject);
   }
   catch (e) {
