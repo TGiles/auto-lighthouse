@@ -13,6 +13,8 @@ jobs:
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
+    - name: Setup Chrome
+      uses: browser-actions/setup-chrome@v0.0.0
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
