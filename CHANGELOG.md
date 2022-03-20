@@ -1,6 +1,11 @@
 
 
-## [3.0.1](https://github.com/TGiles/auto-lighthouse/compare/3.0.0...3.0.1) (2022-03-20)# [3.0.0](https://github.com/TGiles/auto-lighthouse/compare/2.0.5...3.0.0) (2022-03-20)
+## [3.0.1](https://github.com/TGiles/auto-lighthouse/compare/3.0.0...3.0.1) (2022-03-20)
+
+**Node 12 is no longer supported as of 3.0.0.**
+Fixes release mismatch between GitHub and NPM.
+Note, there is no 3.0.0 release available because of this.
+## [3.0.0](https://github.com/TGiles/auto-lighthouse/compare/2.0.5...3.0.0) (2022-03-20)
 
 
 ### Bug Fixes
@@ -14,7 +19,7 @@
 
 ### BREAKING CHANGES
 
-* drop support for Node 12## [2.0.5](https://github.com/TGiles/auto-lighthouse/compare/2.0.4...2.0.5) (2021-11-30)
+* drop support for Node 12 [2.0.5](https://github.com/TGiles/auto-lighthouse/compare/2.0.4...2.0.5) (2021-11-30)
 
 
 ### Bug Fixes
