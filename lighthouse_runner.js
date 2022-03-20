@@ -61,7 +61,7 @@ async function launchChromeAndRunLighthouseAsync(url, opts, config = null) {
     return results.lhr;
 
   } catch (e) {
-    console.error(e);
+    throw e;
   }
 };
 
@@ -207,7 +207,7 @@ const complete = (urlList, autoOpen) => {
         aggregateCSVReports(tempFilePath, formFactor);
       }
     } catch (e) {
-      console.error(e);
+        throw (e);
     }
     if (autoOpen) {
       openReports(port);
