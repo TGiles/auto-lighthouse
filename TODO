@@ -1,0 +1,2 @@
+Fix GitHub Checks so that a successful test run is required for merging.
+https://github.com/marketplace/actions/github-checks seems to be the thing I need to use?

@@ -5,6 +5,7 @@ on: [push]
 jobs:
   build:
 
+    name: Node CI
     runs-on: ${{ matrix.os }}
 
     strategy:
