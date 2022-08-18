@@ -15,7 +15,7 @@ A CLI for crawling one or more domains and generating both mobile and desktop re
 
 **Note: You will need a version of Chrome or Chromium installed for this package to work as expected.**
 
-## How to use consume via NPM
+## How to use via NPM
 * `npx auto-lighthouse`
     * This command should print the help output
 
