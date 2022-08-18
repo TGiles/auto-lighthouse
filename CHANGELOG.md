@@ -1,5 +1,7 @@
 
 
+## [3.0.2](https://github.com/TGiles/auto-lighthouse/compare/3.0.1...3.0.2) (2022-08-18)
+
 ## [3.0.1](https://github.com/TGiles/auto-lighthouse/compare/3.0.0...3.0.1) (2022-03-20)
 
 **Node 12 is no longer supported as of 3.0.0.**
