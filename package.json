@@ -41,7 +41,7 @@
     "commander": "^13.0.0",
     "express": "^5.1.0",
     "lighthouse": "^12.3.0",
-    "open": "10.1.0",
+    "open": "10.1.2",
     "serve-index": "^1.9.1",
     "simplecrawler": "^1.1.8"
   },
