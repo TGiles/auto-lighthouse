@@ -35,24 +35,24 @@
   },
   "homepage": "https://tgiles.github.io/auto-lighthouse/",
   "dependencies": {
-    "chrome-launcher": "^0.15.0",
+    "chrome-launcher": "^1.1.2",
     "cli-progress": "^3.8.2",
     "cli-spinner": "^0.2.10",
-    "commander": "^9.1.0",
-    "express": "^4.17.1",
-    "lighthouse": "^9.0.0",
-    "open": "8.4.0",
+    "commander": "^13.0.0",
+    "express": "^5.1.0",
+    "lighthouse": "^12.3.0",
+    "open": "10.1.2",
     "serve-index": "^1.9.1",
     "simplecrawler": "^1.1.8"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.0.3",
-    "@commitlint/config-conventional": "^17.0.3",
-    "@release-it/conventional-changelog": "^5.1.0",
-    "husky": "^8.0.1",
-    "jasmine": "4.3.0",
-    "nyc": "^15.1.0",
-    "release-it": "^15.3.0"
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@release-it/conventional-changelog": "^10.0.0",
+    "husky": "^9.1.7",
+    "jasmine": "5.7.1",
+    "nyc": "^17.1.0",
+    "release-it": "^19.0.1"
   },
   "release-it": {
     "github": {
