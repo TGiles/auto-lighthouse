@@ -48,11 +48,11 @@
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
-    "@release-it/conventional-changelog": "^5.1.0",
+    "@release-it/conventional-changelog": "^10.0.1",
     "husky": "^8.0.1",
     "jasmine": "4.3.0",
     "nyc": "^15.1.0",
-    "release-it": "^15.3.0"
+    "release-it": "^19.0.2"
   },
   "release-it": {
     "github": {
