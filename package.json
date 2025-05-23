@@ -39,7 +39,7 @@
     "cli-progress": "^3.8.2",
     "cli-spinner": "^0.2.10",
     "commander": "^9.1.0",
-    "express": "^4.17.1",
+    "express": "^5.1.0",
     "lighthouse": "^12.6.0",
     "open": "8.4.0",
     "serve-index": "^1.9.1",
